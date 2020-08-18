@@ -8,7 +8,7 @@ const NETWORK = 'testnet'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
-const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
+const TESTNET_API_FREE = 'http://localhost:3000/v2/'
 // const MAINNET_API_PAID = 'https://api.fullstack.cash/v3/'
 // const TESTNET_API_PAID = 'https://tapi.fullstack.cash/v3/'
 
@@ -43,6 +43,7 @@ async function createWallet () {
 
     // root seed buffer
     const rootSeed = await bchjs.Mnemonic.toSeed(mnemonic)
+    console.log('ROOTSEED', rootSeed)
 
     // master HDNode
     let masterHDNode

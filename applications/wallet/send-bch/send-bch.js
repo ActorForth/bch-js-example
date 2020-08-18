@@ -25,7 +25,7 @@ else bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
 
 // Open the wallet generated with create-wallet.
 try {
-  var walletInfo = require('../create-wallet/wallet.json')
+  var walletInfo = require('../create-wallet/wallet2.json')
 } catch (err) {
   console.log(
     'Could not open wallet.json. Generate a wallet with create-wallet first.'
@@ -62,13 +62,13 @@ async function sendBch () {
     // Get UTXOs held by the address.
     // https://developer.bitcoin.com/mastering-bitcoin-cash/4-transactions/
     const utxos = await bchjs.Electrumx.utxo(SEND_ADDR)
-    // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`);
+    console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
     if (utxos.utxos.length === 0) throw new Error('No UTXOs found.')
 
     // console.log(`u: ${JSON.stringify(u, null, 2)}`
     const utxo = await findBiggestUtxo(utxos.utxos)
-    // console.log(`utxo: ${JSON.stringify(utxo, null, 2)}`);
+    console.log(`utxo: ${JSON.stringify(utxo, null, 2)}`)
 
     // instance of transaction builder
     let transactionBuilder
@@ -78,9 +78,13 @@ async function sendBch () {
 
     // Essential variables of a transaction.
     const satoshisToSend = SATOSHIS_TO_SEND
+    console.log('SATOSHISTOSEND', satoshisToSend)
     const originalAmount = utxo.value
+    console.log('ORIGINALAMOUNT', originalAmount)
     const vout = utxo.tx_pos
+    console.log('VOUT', vout)
     const txid = utxo.tx_hash
+    console.log('TXID', txid)
 
     // add input with txid and index of vout
     transactionBuilder.addInput(txid, vout)
@@ -91,7 +95,8 @@ async function sendBch () {
       { P2PKH: 2 }
     )
     console.log(`Transaction byte count: ${byteCount}`)
-    const satoshisPerByte = 1.2
+    // 1.0 is the minimum
+    const satoshisPerByte = 1.0
     const txFee = Math.floor(satoshisPerByte * byteCount)
     console.log(`Transaction fee: ${txFee}`)
 
@@ -107,9 +112,11 @@ async function sendBch () {
 
     // Generate a change address from a Mnemonic of a private key.
     const change = await changeAddrFromMnemonic(SEND_MNEMONIC)
+    console.log('CHANGE', change)
 
     // Generate a keypair from the change address.
     const keyPair = bchjs.HDNode.toKeyPair(change)
+    console.log('KEYPAIR', keyPair)
 
     // Sign the transaction with the HD node.
     let redeemScript
@@ -120,16 +127,19 @@ async function sendBch () {
       transactionBuilder.hashTypes.SIGHASH_ALL,
       originalAmount
     )
+    console.log('TRANSACTIONBUILDER', transactionBuilder)
 
     // build tx
     const tx = transactionBuilder.build()
+    console.log('TX', tx)
     // output rawhex
     const hex = tx.toHex()
-    // console.log(`TX hex: ${hex}`);
+    console.log(`TX hex: ${hex}`)
     console.log(' ')
 
     // Broadcast transation to the network
     const txidStr = await bchjs.RawTransactions.sendRawTransaction([hex])
+    console.log('TXIDSTR', txidStr)
     // import from util.js file
     const util = require('../util.js')
     console.log(`Transaction ID: ${txidStr}`)

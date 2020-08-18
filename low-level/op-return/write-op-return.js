@@ -5,14 +5,23 @@
 
 // You can generate a WIF (private key) and public address using the
 // 'get-key' command of slp-cli-wallet.
-const WIF = 'L3E1e8td9o71q8oYwFs4dwnNpq3LnxB67dtEo5aAqsHCgysJye5e'
+const WIF = 'cSABRgrvqXoesQiCNBcj17JzswcDNQKbQe8JhtiPRevW84jUaqrn'
 // const ADDR = 'bitcoincash:qr9jqgjlx2fqldyy2pj8nmxr0vuu59k0wsumalhexa'
 
+const NETWORK = 'testnet'
+// REST API servers.
+const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
+const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
+// TODO test with bitcoin.com
+
 // Customize the message you want to send
-const MESSAGE = 'BURN abcdef'
+const MESSAGE = 'fuck yeah'
 
 const BCHJS = require('@chris.troutner/bch-js')
-const bchjs = new BCHJS()
+let bchjs
+if (NETWORK === 'mainnet') bchjs = new BCHJS({ restURL: MAINNET_API_FREE })
+else bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
+
 
 async function writeOpReturn (msg, wif) {
   try {
@@ -29,16 +38,22 @@ async function writeOpReturn (msg, wif) {
     console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
     const utxo = await findBiggestUtxo(utxos)
+    console.log('findBiggestUtxo UTXO', utxo)
 
     // instance of transaction builder
-    const transactionBuilder = new bchjs.TransactionBuilder()
+    const transactionBuilder = new bchjs.TransactionBuilder('testnet')
+    console.log('TRANSACTIONBUILDER', transactionBuilder)
 
     const originalAmount = utxo.value
-    const vout = utxo.tx_out
+    console.log('ORIGINALAMOUNT', originalAmount)
+    const vout = utxo.tx_pos
+    console.log('VOUT', vout)
     const txid = utxo.tx_hash
+    console.log('TXID', txid)
 
     // add input with txid and index of vout
     transactionBuilder.addInput(txid, vout)
+    console.log('TRANSACTIONBUILDER', transactionBuilder)
 
     // TODO: Compute the 1 sat/byte fee.
     const fee = 500
@@ -46,22 +61,37 @@ async function writeOpReturn (msg, wif) {
     // BEGIN - Construction of OP_RETURN transaction.
 
     // Add the OP_RETURN to the transaction.
+
+    let locktimeBip62 = 'c808f05c' //slpjs.Utils.get_BIP62_locktime_hex(locktime);
+
+let redeemScript = BITBOX.Script.encode([
+  Buffer.from(locktimeBip62, 'hex'),
+  opcodes.OP_CHECKLOCKTIMEVERIFY,
+  opcodes.OP_DROP,
+  Buffer.from(pubkey, 'hex'),
+  opcodes.OP_CHECKSIG
+])
+
     const script = [
-      bchjs.Script.opcodes.OP_RETURN,
-      Buffer.from('6d02', 'hex'), // Makes message comply with the memo.cash protocol.
-      Buffer.from(`${msg}`)
+      Buffer.from(locktimeBip62, 'hex'),
+      bchjs.Script.opcodes.OP_CHECKLOCKTIMEVERIFY,
+      bchjs.Script.opcodes.OP_DROP, // Makes message comply with the memo.cash protocol.
+      Buffer.from(pubkey, 'hex')
     ]
 
     // Compile the script array into a bitcoin-compliant hex encoded string.
     const data = bchjs.Script.encode(script)
+    console.log('DATA', data)
 
     // Add the OP_RETURN output.
     transactionBuilder.addOutput(data, 0)
+    console.log('TRANSACTIONBUILDER 0', transactionBuilder)
 
     // END - Construction of OP_RETURN transaction.
 
     // Send the same amount - fee.
     transactionBuilder.addOutput(addr, originalAmount - fee)
+    console.log('TRANSACTIONBUILDER 1', transactionBuilder)
 
     // Sign the transaction with the HD node.
     let redeemScript
@@ -75,9 +105,11 @@ async function writeOpReturn (msg, wif) {
 
     // build tx
     const tx = transactionBuilder.build()
+    console.log('TX', tx)
 
     // output rawhex
     const hex = tx.toHex()
+    console.log('HEX', hex)
     // console.log(`TX hex: ${hex}`);
     // console.log(` `);
 

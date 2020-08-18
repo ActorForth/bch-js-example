@@ -7,7 +7,7 @@ const NETWORK = 'testnet'
 
 // Edit this variable to direct where the BCH should be sent. By default, it
 // will be sent to the address in the wallet.
-let RECV_ADDR = ''
+let RECV_ADDR = 'htest:qp7nnrnngpeuyzsgfzqxufl80utajr5u7vvcklude3'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
@@ -110,7 +110,7 @@ async function sendAll () {
     const tx = transactionBuilder.build()
     // output rawhex
     const hex = tx.toHex()
-    // console.log(`TX hex: ${hex}`)
+    console.log(`TX hex: ${hex}`)
     console.log(' ')
 
     // Broadcast transation to the network

@@ -8,7 +8,7 @@
 const NETWORK = 'testnet'
 
 // Replace the address below with the address you want to send the BCH to.
-let RECV_ADDR = ''
+let RECV_ADDR = 'bchtest:qz23azllpnszkeuja9gyec7zk4pkdtr0guvu4y3efq'
 // set satoshi amount to send
 const SATOSHIS_TO_SEND = 1000
 
@@ -115,7 +115,7 @@ async function sendBch () {
     const tx = transactionBuilder.build()
     // output rawhex
     const hex = tx.toHex()
-    // console.log(`TX hex: ${hex}`)
+    console.log(`TX hex: ${hex}`)
     console.log(' ')
 
     // Broadcast transation to the network

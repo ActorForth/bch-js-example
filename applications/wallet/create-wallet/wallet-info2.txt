@@ -1,0 +1,16 @@
+BIP44 $BCH Wallet
+
+128 bit english BIP32 Mnemonic:
+prize scare dignity country brown creek flash fluid umbrella city rough lounge
+
+BIP44 Account: "m/44'/145'/0'"
+m/44'/145'/0'/0/0: bchtest:qqenkalvdyq52eevh4npzwwt5eq5wdn5gcvj7wh42c
+m/44'/145'/0'/0/1: bchtest:qp7nnrnngpeuyzsgfzqxufl80utajr5u7vvcklude3
+m/44'/145'/0'/0/2: bchtest:qqq7tc9djygvqkxf8e9nqn7cs7hkqyw7ev80qr4dk9
+m/44'/145'/0'/0/3: bchtest:qrq2cu8e24pgxhqajassnptez7d4tnsw6vt3yar85p
+m/44'/145'/0'/0/4: bchtest:qq8zpr5rf5rxpna3q9zfqa600clj2rhsgs7waqz339
+m/44'/145'/0'/0/5: bchtest:qq39vn24mz5alfs4elt7wuyvgtgy0zlazvyt32ufpd
+m/44'/145'/0'/0/6: bchtest:qqz0q5x20s6hd6q8xh2ad4j0dnmkaxqdack0tszhuc
+m/44'/145'/0'/0/7: bchtest:qqh6qn4gcj45vpg5a4q5euhyhgd40mye8yj9vpkywh
+m/44'/145'/0'/0/8: bchtest:qrj06e72kcw470pzpkee7q6ztxvekvr6dyj6jc78w7
+m/44'/145'/0'/0/9: bchtest:qz23azllpnszkeuja9gyec7zk4pkdtr0guvu4y3efq
