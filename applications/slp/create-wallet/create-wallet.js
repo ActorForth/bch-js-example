@@ -77,16 +77,16 @@ async function createWallet () {
   // Get the legacy address.
 
   outStr += '\n\n\n'
-  fs.writeFile('wallet-info.txt', outStr, function (err) {
+  fs.writeFile('wallet-info-2.txt', outStr, function (err) {
     if (err) return console.error(err)
 
-    console.log('wallet-info.txt written successfully.')
+    console.log('wallet-info-2.txt written successfully.')
   })
 
   // Write out the basic information into a json file for other apps to use.
-  fs.writeFile('wallet.json', JSON.stringify(outObj, null, 2), function (err) {
+  fs.writeFile('wallet.json-2', JSON.stringify(outObj, null, 2), function (err) {
     if (err) return console.error(err)
-    console.log('wallet.json written successfully.')
+    console.log('wallet-2.json written successfully.')
   })
 }
 createWallet()

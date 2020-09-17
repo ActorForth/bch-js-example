@@ -6,7 +6,7 @@
 const TOKENQTY = 10
 const TOKENID =
   '61364f802ecfa57ec7a0f9fdf2f7b54562531cb372904bf44c4ccee270167e70'
-let TO_SLPADDR = ''
+let TO_SLPADDR = 'slpreg:qrfp57r3a75h0kplzt98f66ys6u6wy9nxvkpffkxaf'
 
 // Set NETWORK to either testnet or mainnet
 const NETWORK = 'regtest'
@@ -18,7 +18,7 @@ const TESTNET_API_FREE = 'http://localhost:3000/v3/'
 // const TESTNET_API_PAID = 'https://tapi.fullstack.cash/v3/'
 
 // bch-js-examples require code from the main bch-js repo
-const BCHJS = require('@chris.troutner/bch-js')
+const BCHJS = require('bch-js-reg')
 
 // Instantiate bch-js based on the network.
 let bchjs
@@ -39,25 +39,28 @@ try {
 
 async function sendToken () {
   try {
-    const mnemonic = walletInfo.mnemonic
-
-    // root seed buffer
-    const rootSeed = await bchjs.Mnemonic.toSeed(mnemonic)
-    // master HDNode
-    let masterHDNode
-    if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
-    else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'testnet') // Testnet
-
-    // HDNode of BIP44 account
-    const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/245'/0'")
-    const change = bchjs.HDNode.derivePath(account, '0/0')
-
+    // const mnemonic = walletInfo.mnemonic
+    //
+    // // root seed buffer
+    // const rootSeed = await bchjs.Mnemonic.toSeed(mnemonic)
+    // // master HDNode
+    // let masterHDNode
+    // if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
+    // else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'regtest') // Testnet
+    //
+    // // HDNode of BIP44 account
+    // const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/245'/0'")
+    // const change = bchjs.HDNode.derivePath(account, '0/0')
+    const change = await changeAddrFromMnemonic("duty position stumble chapter hockey calm load bomb scan shove wise game")
+    console.log('CHANGE', change)
     // Generate an EC key pair for signing the transaction.
     const keyPair = bchjs.HDNode.toKeyPair(change)
 
     // get the cash address
-    const cashAddress = bchjs.HDNode.toCashAddress(change)
-    const slpAddress = bchjs.HDNode.toSLPAddress(change)
+    const cashAddress = bchjs.HDNode.toCashAddress(change, true)
+    console.log('CASHADDRESS', cashAddress)
+    const slpAddress = bchjs.HDNode.toSLPAddress(change, true)
+    console.log('SLPADDRESS', slpAddress)
 
     // Get UTXOs held by this address.
     const data = await bchjs.Electrumx.utxo(cashAddress)
@@ -80,7 +83,7 @@ async function sendToken () {
     if (bchUtxos.length === 0) {
       throw new Error('Wallet does not have a BCH UTXO to pay miner fees.')
     }
-
+    console.log('TOKENUTXOS', tokenUtxos)
     // Filter out the token UTXOs that match the user-provided token ID.
     tokenUtxos = tokenUtxos.filter((utxo, index) => {
       if (
@@ -113,7 +116,7 @@ async function sendToken () {
     let transactionBuilder
     if (NETWORK === 'mainnet') {
       transactionBuilder = new bchjs.TransactionBuilder()
-    } else transactionBuilder = new bchjs.TransactionBuilder('testnet')
+    } else transactionBuilder = new bchjs.TransactionBuilder('regtest')
 
     // Add the BCH UTXO as input to pay for the transaction.
     const originalAmount = bchUtxo.value
@@ -232,4 +235,23 @@ function findBiggestUtxo (utxos) {
   }
 
   return utxos[largestIndex]
+}
+
+// Generate a change address from a Mnemonic of a private key.
+async function changeAddrFromMnemonic (mnemonic) {
+  // root seed buffer
+  const rootSeed = await bchjs.Mnemonic.toSeed(mnemonic)
+
+  // master HDNode
+  let masterHDNode
+  if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
+  else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'regtest')
+
+  // HDNode of BIP44 account
+  const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")
+
+  // derive the first external change address HDNode which is going to spend utxo
+  const change = bchjs.HDNode.derivePath(account, '0/0')
+
+  return change
 }
