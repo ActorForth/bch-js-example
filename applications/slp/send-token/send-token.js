@@ -3,17 +3,17 @@
 */
 
 // CUSTOMIZE THESE VALUES FOR YOUR USE
-const TOKENQTY = 1
+const TOKENQTY = 10
 const TOKENID =
-  '8de4984472af772f144a74de473d6c21505a6d89686b57445c3e4fc7db3773b6'
+  '61364f802ecfa57ec7a0f9fdf2f7b54562531cb372904bf44c4ccee270167e70'
 let TO_SLPADDR = ''
 
 // Set NETWORK to either testnet or mainnet
-const NETWORK = 'mainnet'
+const NETWORK = 'regtest'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
-const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
+const TESTNET_API_FREE = 'http://localhost:3000/v3/'
 // const MAINNET_API_PAID = 'https://api.fullstack.cash/v3/'
 // const TESTNET_API_PAID = 'https://tapi.fullstack.cash/v3/'
 

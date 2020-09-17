@@ -3,15 +3,17 @@
 */
 
 // Set NETWORK to either testnet or mainnet
-const NETWORK = 'testnet'
+const NETWORK = 'regtest'
 // Replace the address below with the address you want to send the BCH to.
-let RECV_ADDR = ''
+let RECV_ADDR = 'bchreg:qpvjmndrnavvl225gtam4n0agraqghtp452xd4urg2'
 // set satoshi amount to send
-const SATOSHIS_TO_SEND = 1000
+const SATOSHIS_TO_SEND = 10000
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
-const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
+const TESTNET_API_FREE = 'http://localhost:3000/v3/'
+// const TESTNET_API_FREE = 'http://localhost:12500/v2/'
+
 // const MAINNET_API_PAID = 'https://api.fullstack.cash/v3/'
 // const TESTNET_API_PAID = 'https://tapi.fullstack.cash/v3/'
 
@@ -25,7 +27,7 @@ else bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
 
 // Open the wallet generated with create-wallet.
 try {
-  var walletInfo = require('../create-wallet/wallet2.json')
+  var walletInfo = require('../create-wallet/wallet-local.json')
 } catch (err) {
   console.log(
     'Could not open wallet.json. Generate a wallet with create-wallet first.'
@@ -39,7 +41,7 @@ const SEND_MNEMONIC = walletInfo.mnemonic
 async function sendBch () {
   try {
     // Get the balance of the sending address.
-    const balance = await getBCHBalance(SEND_ADDR, false)
+    const balance = await getBCHBalance(SEND_ADDR, true)
     console.log(`balance: ${JSON.stringify(balance, null, 2)}`)
     console.log(`Balance of sending address ${SEND_ADDR} is ${balance} BCH.`)
 
@@ -74,7 +76,7 @@ async function sendBch () {
     let transactionBuilder
     if (NETWORK === 'mainnet') {
       transactionBuilder = new bchjs.TransactionBuilder()
-    } else transactionBuilder = new bchjs.TransactionBuilder('testnet')
+    } else transactionBuilder = new bchjs.TransactionBuilder('regtest')
 
     // Essential variables of a transaction.
     const satoshisToSend = SATOSHIS_TO_SEND
@@ -159,7 +161,7 @@ async function changeAddrFromMnemonic (mnemonic) {
   // master HDNode
   let masterHDNode
   if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
-  else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'testnet')
+  else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'regtest')
 
   // HDNode of BIP44 account
   const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")
@@ -199,10 +201,13 @@ async function findBiggestUtxo (utxos) {
 
   for (var i = 0; i < utxos.length; i++) {
     const thisUtxo = utxos[i]
+    console.log('THISUTXO', thisUtxo)
     // console.log(`thisUTXO: ${JSON.stringify(thisUtxo, null, 2)}`);
 
     // Validate the UTXO data with the full node.
     const txout = await bchjs.Blockchain.getTxOut(thisUtxo.tx_hash, thisUtxo.tx_pos)
+    console.log('TXOUT', txout)
+    console.log('THISUTXO.TX_HASH', thisUtxo.tx_hash)
     if (txout === null) {
       // If the UTXO has already been spent, the full node will respond with null.
       console.log(

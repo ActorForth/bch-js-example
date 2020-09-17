@@ -4,16 +4,16 @@
 */
 
 // Set NETWORK to either testnet or mainnet
-const NETWORK = 'mainnet'
+const NETWORK = 'regtest'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
-const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
+const TESTNET_API_FREE = 'http://localhost:3000/v3/'
 // const MAINNET_API_PAID = 'https://api.fullstack.cash/v3/'
 // const TESTNET_API_PAID = 'https://tapi.fullstack.cash/v3/'
 
 // bch-js-examples require code from the main bch-js repo
-const BCHJS = require('@chris.troutner/bch-js')
+const BCHJS = require('bch-js-reg')
 
 // Instantiate bch-js based on the network.
 let bchjs
@@ -33,26 +33,38 @@ try {
 
 async function createToken () {
   try {
-    const mnemonic = walletInfo.mnemonic
-
-    // root seed buffer
-    const rootSeed = await bchjs.Mnemonic.toSeed(mnemonic)
-    // master HDNode
-    let masterHDNode
-    if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
-    else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'testnet') // Testnet
-
-    // HDNode of BIP44 account
-    const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/245'/0'")
-
-    const change = bchjs.HDNode.derivePath(account, '0/0')
+    // const mnemonic = walletInfo.mnemonic
+    // console.log('MNEMONIC', mnemonic)
+    //
+    // // root seed buffer
+    // const rootSeed = await bchjs.Mnemonic.toSeed(mnemonic)
+    // // master HDNode
+    // let masterHDNode
+    // if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
+    // else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'regtest') // Testnet
+    //
+    // // HDNode of BIP44 account
+    // const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/245'/0'")
+    // console.log('ACCOUNT', account)
+    //
+    // const change = bchjs.HDNode.derivePath(account, '0/0')
+    // console.log('CHANGE', change)
+    // Generate a change address from a Mnemonic of a private key.
+    const change = await changeAddrFromMnemonic("duty position stumble chapter hockey calm load bomb scan shove wise game")
+    console.log('CHANGE', change)
 
     // get the cash address
-    const cashAddress = bchjs.HDNode.toCashAddress(change)
+    const cashAddress = bchjs.HDNode.toCashAddress(change, true)
+    console.log('CASHADDRESS', cashAddress)
+
+
+
     // const slpAddress = bchjs.SLP.Address.toSLPAddress(cashAddress)
+    // const cashAddress = 'bchreg:qz0hje9qfdwsl0uj4rca9vvw6hlpsqdd2y7r6g8ryn'
 
     // Get a UTXO to pay for the transaction.
     const data = await bchjs.Electrumx.utxo(cashAddress)
+    console.log('DATA', data)
     const utxos = data.utxos
     // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
@@ -68,7 +80,7 @@ async function createToken () {
     let transactionBuilder
     if (NETWORK === 'mainnet') {
       transactionBuilder = new bchjs.TransactionBuilder()
-    } else transactionBuilder = new bchjs.TransactionBuilder('testnet')
+    } else transactionBuilder = new bchjs.TransactionBuilder('regtest')
 
     const originalAmount = utxo.value
     const vout = utxo.tx_pos
@@ -86,11 +98,11 @@ async function createToken () {
 
     // Generate SLP config object
     const configObj = {
-      name: 'SLP Test Token',
-      ticker: 'SLPTEST',
-      documentUrl: 'https://FullStack.cash',
+      name: 'ActorForth regtest token',
+      ticker: 'AFSLPREGTEST',
+      documentUrl: 'https://github.com/ActorForth/ActorForth',
       decimals: 8,
-      initialQty: 100,
+      initialQty: 100000000000,
       documentHash: '',
       mintBatonVout: 2
     }
@@ -176,4 +188,23 @@ async function findBiggestUtxo (utxos) {
   }
 
   return utxos[largestIndex]
+}
+
+// Generate a change address from a Mnemonic of a private key.
+async function changeAddrFromMnemonic (mnemonic) {
+  // root seed buffer
+  const rootSeed = await bchjs.Mnemonic.toSeed(mnemonic)
+
+  // master HDNode
+  let masterHDNode
+  if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
+  else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'regtest')
+
+  // HDNode of BIP44 account
+  const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")
+
+  // derive the first external change address HDNode which is going to spend utxo
+  const change = bchjs.HDNode.derivePath(account, '0/0')
+
+  return change
 }

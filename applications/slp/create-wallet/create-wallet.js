@@ -4,16 +4,16 @@
 */
 
 // Set NETWORK to either testnet or mainnet
-const NETWORK = 'mainnet'
+const NETWORK = 'regtest'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
-const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
+const TESTNET_API_FREE = 'http://localhost:3000/v3/'
 // const MAINNET_API_PAID = 'https://api.fullstack.cash/v3/'
 // const TESTNET_API_PAID = 'https://tapi.fullstack.cash/v3/'
 
 // bch-js-examples require code from the main bch-js repo
-const BCHJS = require('@chris.troutner/bch-js')
+const BCHJS = require('bch-js-reg')
 
 // Instantiate bch-js based on the network.
 let bchjs
@@ -44,7 +44,7 @@ async function createWallet () {
   // master HDNode
   let masterHDNode
   if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
-  else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'testnet') // Testnet
+  else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'regtest') // Testnet
 
   // HDNode of BIP44 account
   const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/245'/0'")
@@ -54,22 +54,25 @@ async function createWallet () {
   for (let i = 0; i < 10; i++) {
     const childNode = masterHDNode.derivePath(`m/44'/245'/0'/0/${i}`)
     console.log(
-      `m/44'/245'/0'/0/${i}: ${bchjs.HDNode.toCashAddress(childNode)}`
+      `m/44'/245'/0'/0/${i}: ${bchjs.HDNode.toCashAddress(childNode, true)}`
     )
-    outStr += `m/44'/245'/0'/0/${i}: ${bchjs.HDNode.toCashAddress(childNode)}\n`
+    outStr += `m/44'/245'/0'/0/${i}: ${bchjs.HDNode.toCashAddress(childNode, true)}\n`
 
     if (i === 0) {
-      outObj.cashAddress = bchjs.HDNode.toCashAddress(childNode)
-      outObj.slpAddress = bchjs.SLP.Address.toSLPAddress(outObj.cashAddress)
-      outObj.legacyAddress = bchjs.Address.toLegacyAddress(outObj.cashAddress)
+      outObj.cashAddress = bchjs.HDNode.toCashAddress(childNode, true)
+      console.log('OUTOBJ.CASHADDRESS', outObj.cashAddress)
+      outObj.slpAddress = bchjs.SLP.Address.toSLPAddress(outObj.cashAddress, true, true)
+      outObj.legacyAddress = bchjs.Address.toLegacyAddress(outObj.cashAddress, true)
     }
+    console.log('OUTOBJ.SLPADDRESS', outObj.slpAddress)
+
   }
 
   // derive the first external change address HDNode which is going to spend utxo
   const change = bchjs.HDNode.derivePath(account, '0/0')
 
   // get the cash address
-  bchjs.HDNode.toCashAddress(change)
+  bchjs.HDNode.toCashAddress(change, true)
 
   // Get the legacy address.
 

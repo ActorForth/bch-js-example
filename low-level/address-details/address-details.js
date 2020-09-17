@@ -8,7 +8,9 @@ const NETWORK = 'testnet'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
-const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
+// const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
+const TESTNET_API_FREE = 'http://localhost:12500/v2/'
+
 // const MAINNET_API_PAID = 'https://api.fullstack.cash/v3/'
 // const TESTNET_API_PAID = 'https://tapi.fullstack.cash/v3/'
 
@@ -21,6 +23,7 @@ else bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
 
 // Open the wallet generated with create-wallet.
 try {
+  // var walletInfo = require('../../applications/wallet/create-wallet/wallet2.json')
   var walletInfo = require('../../applications/wallet/create-wallet/wallet.json')
 } catch (err) {
   console.log(

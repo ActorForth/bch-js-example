@@ -4,11 +4,14 @@
 */
 
 // Set NETWORK to either testnet or mainnet
-const NETWORK = 'testnet'
+const NETWORK = 'regtest'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
-const TESTNET_API_FREE = 'http://localhost:3000/v2/'
+// const TESTNET_API_FREE = 'https://trest.bitcoin.com/v2/'
+const TESTNET_API_FREE = 'http://localhost:3000/v3/'
+// const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
+
 // const MAINNET_API_PAID = 'https://api.fullstack.cash/v3/'
 // const TESTNET_API_PAID = 'https://tapi.fullstack.cash/v3/'
 
@@ -22,7 +25,8 @@ else bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
 
 // Open the wallet generated with create-wallet.
 try {
-  var walletInfo = require('../create-wallet/wallet.json')
+  var walletInfo = require('../create-wallet/wallet-local.json')
+  console.log('WALLETINFO', walletInfo)
 } catch (err) {
   console.log(
     'Could not open wallet.json. Generate a wallet with create-wallet first.'
@@ -34,7 +38,7 @@ try {
 async function getBalance () {
   try {
     // first get BCH balance
-    const balance = await bchjs.Electrumx.balance(walletInfo.cashAddress)
+    const balance = await bchjs.Electrumx.balance('bchreg:qpvjmndrnavvl225gtam4n0agraqghtp452xd4urg2')
 
     console.log('BCH Balance information:')
     console.log(JSON.stringify(balance, null, 2))

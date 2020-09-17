@@ -33,7 +33,7 @@ try {
 async function listUtxos () {
   try {
     // first get BCH balance
-    const balance = await bchjs.Electrumx.utxo(walletInfo.cashAddress)
+    const balance = await bchjs.Electrumx.utxo('bchtest:qqenkalvdyq52eevh4npzwwt5eq5wdn5gcvj7wh42c')
 
     console.log(`UTXOs associated with ${walletInfo.cashAddress}:`)
     console.log(JSON.stringify(balance, null, 2))

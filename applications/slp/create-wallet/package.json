@@ -11,5 +11,6 @@
   "contributors": [
     "Gabriel Cardona <gabriel@bitcoin.com>"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {}
 }

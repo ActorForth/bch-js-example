@@ -7,11 +7,13 @@ const NETWORK = 'testnet'
 
 // Edit this variable to direct where the BCH should be sent. By default, it
 // will be sent to the address in the wallet.
-let RECV_ADDR = 'htest:qp7nnrnngpeuyzsgfzqxufl80utajr5u7vvcklude3'
+let RECV_ADDR = ''
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
+
+// const TESTNET_API_FREE = 'http://localhost:12500/v3/'
 // const MAINNET_API_PAID = 'https://api.fullstack.cash/v3/'
 // const TESTNET_API_PAID = 'https://tapi.fullstack.cash/v3/'
 
@@ -25,7 +27,7 @@ else bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
 
 // Open the wallet generated with create-wallet.
 try {
-  var walletInfo = require('../create-wallet/wallet.json')
+  var walletInfo = require('../create-wallet/wallet2.json')
 } catch (err) {
   console.log(
     'Could not open wallet.json. Generate a wallet with create-wallet first.'

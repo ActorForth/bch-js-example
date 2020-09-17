@@ -4,11 +4,11 @@
 */
 
 // Set NETWORK to either testnet or mainnet
-const NETWORK = 'testnet'
+const NETWORK = 'regtest'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
-const TESTNET_API_FREE = 'http://localhost:3000/v2/'
+const TESTNET_API_FREE = 'http://localhost:3000/v3/'
 // const MAINNET_API_PAID = 'https://api.fullstack.cash/v3/'
 // const TESTNET_API_PAID = 'https://tapi.fullstack.cash/v3/'
 
@@ -46,9 +46,7 @@ async function createWallet () {
     console.log('ROOTSEED', rootSeed)
 
     // master HDNode
-    let masterHDNode
-    if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
-    else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'testnet') // Testnet
+    const masterHDNode = bchjs.HDNode.fromSeed(rootSeed, NETWORK)
 
     // HDNode of BIP44 account
     console.log('BIP44 Account: "m/44\'/145\'/0\'"')
@@ -58,31 +56,31 @@ async function createWallet () {
     for (let i = 0; i < 10; i++) {
       const childNode = masterHDNode.derivePath(`m/44'/145'/0'/0/${i}`)
       console.log(
-        `m/44'/145'/0'/0/${i}: ${bchjs.HDNode.toCashAddress(childNode)}`
+        `m/44'/145'/0'/0/${i}: ${bchjs.HDNode.toCashAddress(childNode, true)}`
       )
       outStr += `m/44'/145'/0'/0/${i}: ${bchjs.HDNode.toCashAddress(
-        childNode
+        childNode, true
       )}\n`
 
       // Save the first seed address for use in the .json output file.
       if (i === 0) {
-        outObj.cashAddress = bchjs.HDNode.toCashAddress(childNode)
-        outObj.legacyAddress = bchjs.HDNode.toLegacyAddress(childNode)
+        outObj.cashAddress = bchjs.HDNode.toCashAddress(childNode, true)
+        outObj.legacyAddress = bchjs.HDNode.toLegacyAddress(childNode, true)
         outObj.WIF = bchjs.HDNode.toWIF(childNode)
       }
     }
 
     // Write the extended wallet information into a text file.
-    fs.writeFile('wallet-info.txt', outStr, function (err) {
+    fs.writeFile('wallet-info-local.txt', outStr, function (err) {
       if (err) return console.error(err)
 
-      console.log('wallet-info.txt written successfully.')
+      console.log('wallet-info-local.txt written successfully.')
     })
 
     // Write out the basic information into a json file for other example apps to use.
-    fs.writeFile('wallet.json', JSON.stringify(outObj, null, 2), function (err) {
+    fs.writeFile('wallet-local.json', JSON.stringify(outObj, null, 2), function (err) {
       if (err) return console.error(err)
-      console.log('wallet.json written successfully.')
+      console.log('wallet-local.json written successfully.')
     })
   } catch (err) {
     console.error('Error in createWallet(): ', err)

@@ -1,0 +1,16 @@
+BIP44 $BCH Wallet
+
+128 bit english BIP32 Mnemonic:
+garden leaf tenant opinion fiction access radar picture shy hen foot able
+
+BIP44 Account: "m/44'/145'/0'"
+m/44'/145'/0'/0/0: bchreg:qplk47usnp8r2wv77gfq7pyjyln5d4mp6gdtj9apnj
+m/44'/145'/0'/0/1: bchreg:qpvjmndrnavvl225gtam4n0agraqghtp452xd4urg2
+m/44'/145'/0'/0/2: bchreg:qrg42qzvu2t3ynjr24jejs7u6fvqr6v8257fvdxsm4
+m/44'/145'/0'/0/3: bchreg:qzekn2veaq79cur62l3szq5ppz73eunftcnrrjhqda
+m/44'/145'/0'/0/4: bchreg:qq5jqvcew8c9rk25q8nd9ftffkf7ynt0dsfyeej4ys
+m/44'/145'/0'/0/5: bchreg:qp5edhyc4n88y60sgt6y0073nn5npkfdrqzx0vaq0c
+m/44'/145'/0'/0/6: bchreg:qzamkvw0x48jc4eyvmxcle9ha7n8sh7wh5q72vreuy
+m/44'/145'/0'/0/7: bchreg:qrqgu523dlnkd7nu94p5a9a7lfqa6x6kpqnz64mpd3
+m/44'/145'/0'/0/8: bchreg:qzyck8ytwped9f3en5sckddf2fn2fannav6y8m30n5
+m/44'/145'/0'/0/9: bchreg:qqhkhdz7fwj4rygmgqjqy8mqgswn7zaqzqfedan044
