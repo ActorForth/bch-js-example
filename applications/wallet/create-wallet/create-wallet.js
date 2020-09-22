@@ -16,7 +16,7 @@ const REGTEST_API_FREE = 'http://localhost:3000/v3/'
 const WALLET_NAME = `wallet-info-${NETWORK}2`
 
 // bch-js-examples require code from the main bch-js repo
-const BCHJS = require('@chris.troutner/bch-js')
+const BCHJS = require('bch-js-reg')
 
 // Instantiate bch-js based on the network.
 let bchjs

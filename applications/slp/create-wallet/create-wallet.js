@@ -6,17 +6,17 @@
 // uncomment to select network
 // const NETWORK = 'mainnet'
 // const NETWORK = 'testnet'
-const NETWORK = 'mainnet'
+const NETWORK = 'regtest'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
 const REGTEST_API_FREE = 'http://localhost:3000/v3/'
 
-const WALLET_NAME = `wallet-info-${NETWORK}2`
+const WALLET_NAME = `wallet-info-${NETWORK}-pat`
 
 // bch-js-examples require code from the main bch-js repo
-const BCHJS = require('@chris.troutner/bch-js')
+const BCHJS = require('bch-js-reg')
 
 // Instantiate bch-js based on the network.
 let bchjs
@@ -85,7 +85,7 @@ async function createWallet () {
       if (i === 0) {
         outObj.cashAddress = cashAddress
         outObj.legacyAddress = bchjs.HDNode.toLegacyAddress(childNode, true)
-        outObj.slpAddress = bchjs.SLP.Address.toSLPAddress(outObj.cashAddress, true, true)
+        outObj.slpAddress = bchjs.SLP.Address.toSLPAddress(outObj.cashAddress, true, regtest)
         outObj.WIF = bchjs.HDNode.toWIF(childNode)
       }
     }

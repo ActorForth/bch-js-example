@@ -3,27 +3,46 @@
   example. Also requires that wallet to have a small BCH balance.
 */
 
-// Set NETWORK to either testnet or mainnet
+// uncomment to select network
+// const NETWORK = 'mainnet'
+// const NETWORK = 'testnet'
 const NETWORK = 'regtest'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
-const TESTNET_API_FREE = 'http://localhost:3000/v3/'
-// const MAINNET_API_PAID = 'https://api.fullstack.cash/v3/'
-// const TESTNET_API_PAID = 'https://tapi.fullstack.cash/v3/'
+const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
+const REGTEST_API_FREE = 'http://localhost:3000/v3/'
+
+const WALLET_NAME = `wallet-info-${NETWORK}-pat`
 
 // bch-js-examples require code from the main bch-js repo
 const BCHJS = require('bch-js-reg')
 
 // Instantiate bch-js based on the network.
 let bchjs
-if (NETWORK === 'mainnet') bchjs = new BCHJS({ restURL: MAINNET_API_FREE })
-else bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
+let regtest
+switch (NETWORK) {
+  case 'mainnet':
+    bchjs = new BCHJS({ restURL: MAINNET_API_FREE })
+    regtest = false
+    break
+  case 'testnet':
+    bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
+    regtest = false
+    break
+  case 'regtest':
+    bchjs = new BCHJS({ restURL: REGTEST_API_FREE })
+    regtest = true
+    break
+  default:
+    bchjs = new BCHJS({ restURL: REGTEST_API_FREE })
+    regtest = true
+}
 
 // Open the wallet generated with create-wallet.
 let walletInfo
 try {
-  walletInfo = require('../create-wallet/wallet.json')
+  walletInfo = require(`../../${WALLET_NAME}.json`)
 } catch (err) {
   console.log(
     'Could not open wallet.json. Generate a wallet with create-wallet first.'
@@ -50,11 +69,11 @@ async function createToken () {
     // const change = bchjs.HDNode.derivePath(account, '0/0')
     // console.log('CHANGE', change)
     // Generate a change address from a Mnemonic of a private key.
-    const change = await changeAddrFromMnemonic("duty position stumble chapter hockey calm load bomb scan shove wise game")
-    console.log('CHANGE', change)
+    const change = await changeAddrFromMnemonic(walletInfo.mnemonic)
+    // console.log('CHANGE', change)
 
     // get the cash address
-    const cashAddress = bchjs.HDNode.toCashAddress(change, true)
+    const cashAddress = bchjs.HDNode.toCashAddress(change, regtest)
     console.log('CASHADDRESS', cashAddress)
 
 
@@ -80,7 +99,7 @@ async function createToken () {
     let transactionBuilder
     if (NETWORK === 'mainnet') {
       transactionBuilder = new bchjs.TransactionBuilder()
-    } else transactionBuilder = new bchjs.TransactionBuilder('regtest')
+    } else transactionBuilder = new bchjs.TransactionBuilder(NETWORK)
 
     const originalAmount = utxo.value
     const vout = utxo.tx_pos
@@ -155,7 +174,7 @@ async function createToken () {
     console.log('Check the status of your transaction on this block explorer:')
     if (NETWORK === 'testnet') {
       console.log(`https://explorer.bitcoin.com/tbch/tx/${txidStr}`)
-    } else console.log(`https://explorer.bitcoin.com/bch/tx/${txidStr}`)
+    } else console.log(`http://localhost:12300/explorer/`)
   } catch (err) {
     console.error('Error in createToken: ', err)
   }
@@ -198,7 +217,7 @@ async function changeAddrFromMnemonic (mnemonic) {
   // master HDNode
   let masterHDNode
   if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
-  else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'regtest')
+  else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, NETWORK)
 
   // HDNode of BIP44 account
   const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")

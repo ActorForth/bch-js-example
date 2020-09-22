@@ -17,8 +17,8 @@ const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
 const REGTEST_API_FREE = 'http://localhost:3000/v3/'
 
-const WALLET_NAME = `wallet-info-${NETWORK}`
-const WALLET_NAME2 = `wallet-info-${NETWORK}2`
+const SEND_WALLET_NAME = `wallet-info-${NETWORK}-pat`
+const RECV_WALLET_NAME = `wallet-info-${NETWORK}-slava`
 
 // bch-js-examples require code from the main bch-js repo
 const BCHJS = require('@chris.troutner/bch-js')
@@ -42,7 +42,7 @@ switch (NETWORK) {
 
 // Open the wallet generated with create-wallet.
 try {
-  var walletInfo = require(`../create-wallet/${WALLET_NAME}.json`)
+  var walletInfo = require(`../create-wallet/${SEND_WALLET_NAME}.json`)
 } catch (err) {
   console.log(
     'Could not open wallet.json. Generate a wallet with create-wallet first.'
@@ -52,7 +52,7 @@ try {
 
 // Open the wallet generated with create-wallet.
 try {
-  var walletInfo2 = require(`../create-wallet/${WALLET_NAME}2.json`)
+  var walletInfo2 = require(`../create-wallet/${RECV_WALLET_NAME}.json`)
 } catch (err) {
   console.log(
     'Could not open wallet.json. Generate a wallet with create-wallet first.'

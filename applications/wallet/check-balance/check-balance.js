@@ -13,7 +13,7 @@ const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
 const REGTEST_API_FREE = 'http://localhost:3000/v3/'
 
-const WALLET_NAME = `wallet-info-${NETWORK}`
+const WALLET_NAME = `wallet-info-${NETWORK}-pat`
 
 // bch-js-examples require code from the main bch-js repo
 const BCHJS = require('@chris.troutner/bch-js')
@@ -37,7 +37,7 @@ switch (NETWORK) {
 
 // Open the wallet generated within create-wallet.
 try {
-  var walletInfo = require(`../create-wallet/${WALLET_NAME}.json`)
+  var walletInfo = require(`../../${WALLET_NAME}.json`)
   console.log('WALLETINFO', walletInfo)
 } catch (err) {
   console.log(
