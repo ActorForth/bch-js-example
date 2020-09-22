@@ -2,32 +2,57 @@
   Send 1000 satoshis to RECV_ADDR.
 */
 
-// Set NETWORK to either testnet or mainnet
-const NETWORK = 'regtest'
 // Replace the address below with the address you want to send the BCH to.
-let RECV_ADDR = 'bchreg:qpvjmndrnavvl225gtam4n0agraqghtp452xd4urg2'
+
 // set satoshi amount to send
 const SATOSHIS_TO_SEND = 10000
 
+// uncomment to select network
+// const NETWORK = 'mainnet'
+// const NETWORK = 'testnet'
+const NETWORK = 'regtest'
+
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
-const TESTNET_API_FREE = 'http://localhost:3000/v3/'
-// const TESTNET_API_FREE = 'http://localhost:12500/v2/'
+const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
+const REGTEST_API_FREE = 'http://localhost:3000/v3/'
 
-// const MAINNET_API_PAID = 'https://api.fullstack.cash/v3/'
-// const TESTNET_API_PAID = 'https://tapi.fullstack.cash/v3/'
+const WALLET_NAME = `wallet-info-${NETWORK}`
+const WALLET_NAME2 = `wallet-info-${NETWORK}2`
 
 // bch-js-examples require code from the main bch-js repo
 const BCHJS = require('@chris.troutner/bch-js')
 
 // Instantiate bch-js based on the network.
 let bchjs
-if (NETWORK === 'mainnet') bchjs = new BCHJS({ restURL: MAINNET_API_FREE })
-else bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
+
+switch (NETWORK) {
+  case 'mainnet':
+    bchjs = new BCHJS({ restURL: MAINNET_API_FREE })
+    break
+  case 'testnet':
+    bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
+    break
+  case 'regtest':
+    bchjs = new BCHJS({ restURL: REGTEST_API_FREE })
+    break
+  default:
+    bchjs = new BCHJS({ restURL: REGTEST_API_FREE })
+}
 
 // Open the wallet generated with create-wallet.
 try {
-  var walletInfo = require('../create-wallet/wallet-local.json')
+  var walletInfo = require(`../create-wallet/${WALLET_NAME}.json`)
+} catch (err) {
+  console.log(
+    'Could not open wallet.json. Generate a wallet with create-wallet first.'
+  )
+  process.exit(0)
+}
+
+// Open the wallet generated with create-wallet.
+try {
+  var walletInfo2 = require(`../create-wallet/${WALLET_NAME}2.json`)
 } catch (err) {
   console.log(
     'Could not open wallet.json. Generate a wallet with create-wallet first.'
@@ -38,12 +63,14 @@ try {
 const SEND_ADDR = walletInfo.cashAddress
 const SEND_MNEMONIC = walletInfo.mnemonic
 
+const RECV_ADDR = walletInfo2.cashAddress
+
 async function sendBch () {
   try {
     // Get the balance of the sending address.
     const balance = await getBCHBalance(SEND_ADDR, true)
-    console.log(`balance: ${JSON.stringify(balance, null, 2)}`)
-    console.log(`Balance of sending address ${SEND_ADDR} is ${balance} BCH.`)
+    // console.log(`balance: ${JSON.stringify(balance, null, 2)}`)
+    // console.log(`Balance of sending address ${SEND_ADDR} is ${balance} BCH.`)
 
     // Exit if the balance is zero.
     if (balance <= 0.0) {
@@ -58,35 +85,35 @@ async function sendBch () {
     // Convert to a legacy address (needed to build transactions).
     const SEND_ADDR_LEGACY = bchjs.Address.toLegacyAddress(SEND_ADDR)
     const RECV_ADDR_LEGACY = bchjs.Address.toLegacyAddress(RECV_ADDR)
-    console.log(`Sender Legacy Address: ${SEND_ADDR_LEGACY}`)
-    console.log(`Receiver Legacy Address: ${RECV_ADDR_LEGACY}`)
+    // console.log(`Sender Legacy Address: ${SEND_ADDR_LEGACY}`)
+    // console.log(`Receiver Legacy Address: ${RECV_ADDR_LEGACY}`)
 
     // Get UTXOs held by the address.
     // https://developer.bitcoin.com/mastering-bitcoin-cash/4-transactions/
     const utxos = await bchjs.Electrumx.utxo(SEND_ADDR)
-    console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
+    // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
     if (utxos.utxos.length === 0) throw new Error('No UTXOs found.')
 
     // console.log(`u: ${JSON.stringify(u, null, 2)}`
     const utxo = await findBiggestUtxo(utxos.utxos)
-    console.log(`utxo: ${JSON.stringify(utxo, null, 2)}`)
+    // console.log(`utxo: ${JSON.stringify(utxo, null, 2)}`)
 
     // instance of transaction builder
     let transactionBuilder
     if (NETWORK === 'mainnet') {
       transactionBuilder = new bchjs.TransactionBuilder()
-    } else transactionBuilder = new bchjs.TransactionBuilder('regtest')
+    } else transactionBuilder = new bchjs.TransactionBuilder(NETWORK)
 
     // Essential variables of a transaction.
     const satoshisToSend = SATOSHIS_TO_SEND
-    console.log('SATOSHISTOSEND', satoshisToSend)
+    // console.log('SATOSHISTOSEND', satoshisToSend)
     const originalAmount = utxo.value
-    console.log('ORIGINALAMOUNT', originalAmount)
+    // console.log('ORIGINALAMOUNT', originalAmount)
     const vout = utxo.tx_pos
-    console.log('VOUT', vout)
+    // console.log('VOUT', vout)
     const txid = utxo.tx_hash
-    console.log('TXID', txid)
+    // console.log('TXID', txid)
 
     // add input with txid and index of vout
     transactionBuilder.addInput(txid, vout)
@@ -96,11 +123,11 @@ async function sendBch () {
       { P2PKH: 1 },
       { P2PKH: 2 }
     )
-    console.log(`Transaction byte count: ${byteCount}`)
+    // console.log(`Transaction byte count: ${byteCount}`)
     // 1.0 is the minimum
     const satoshisPerByte = 1.0
     const txFee = Math.floor(satoshisPerByte * byteCount)
-    console.log(`Transaction fee: ${txFee}`)
+    // console.log(`Transaction fee: ${txFee}`)
 
     // amount to send back to the sending address.
     // It's the original amount - 1 sat/byte for tx size
@@ -114,11 +141,11 @@ async function sendBch () {
 
     // Generate a change address from a Mnemonic of a private key.
     const change = await changeAddrFromMnemonic(SEND_MNEMONIC)
-    console.log('CHANGE', change)
+    // console.log('CHANGE', change)
 
     // Generate a keypair from the change address.
     const keyPair = bchjs.HDNode.toKeyPair(change)
-    console.log('KEYPAIR', keyPair)
+    // console.log('KEYPAIR', keyPair)
 
     // Sign the transaction with the HD node.
     let redeemScript
@@ -129,15 +156,14 @@ async function sendBch () {
       transactionBuilder.hashTypes.SIGHASH_ALL,
       originalAmount
     )
-    console.log('TRANSACTIONBUILDER', transactionBuilder)
+    // console.log('TRANSACTIONBUILDER', transactionBuilder)
 
     // build tx
     const tx = transactionBuilder.build()
-    console.log('TX', tx)
+    // console.log('TX', tx)
     // output rawhex
     const hex = tx.toHex()
-    console.log(`TX hex: ${hex}`)
-    console.log(' ')
+    // console.log(`TX hex: ${hex}`)
 
     // Broadcast transation to the network
     const txidStr = await bchjs.RawTransactions.sendRawTransaction([hex])
@@ -161,7 +187,7 @@ async function changeAddrFromMnemonic (mnemonic) {
   // master HDNode
   let masterHDNode
   if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
-  else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'regtest')
+  else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, NETWORK)
 
   // HDNode of BIP44 account
   const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")

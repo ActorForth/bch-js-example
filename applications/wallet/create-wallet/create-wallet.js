@@ -3,22 +3,41 @@
   will be used by later examples.
 */
 
-// Set NETWORK to either testnet or mainnet
-const NETWORK = 'regtest'
+// uncomment to select network
+// const NETWORK = 'mainnet'
+// const NETWORK = 'testnet'
+const NETWORK = 'mainnet'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
-const TESTNET_API_FREE = 'http://localhost:3000/v3/'
-// const MAINNET_API_PAID = 'https://api.fullstack.cash/v3/'
-// const TESTNET_API_PAID = 'https://tapi.fullstack.cash/v3/'
+const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
+const REGTEST_API_FREE = 'http://localhost:3000/v3/'
+
+const WALLET_NAME = `wallet-info-${NETWORK}2`
 
 // bch-js-examples require code from the main bch-js repo
 const BCHJS = require('@chris.troutner/bch-js')
 
 // Instantiate bch-js based on the network.
 let bchjs
-if (NETWORK === 'mainnet') bchjs = new BCHJS({ restURL: MAINNET_API_FREE })
-else bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
+let regtest
+switch (NETWORK) {
+  case 'mainnet':
+    bchjs = new BCHJS({ restURL: MAINNET_API_FREE })
+    regtest = false
+    break
+  case 'testnet':
+    bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
+    regtest = false
+    break
+  case 'regtest':
+    bchjs = new BCHJS({ restURL: REGTEST_API_FREE })
+    regtest = true
+    break
+  default:
+    bchjs = new BCHJS({ restURL: REGTEST_API_FREE })
+    regtest = true
+}
 
 const fs = require('fs')
 
@@ -55,32 +74,32 @@ async function createWallet () {
     // Generate the first 10 seed addresses.
     for (let i = 0; i < 10; i++) {
       const childNode = masterHDNode.derivePath(`m/44'/145'/0'/0/${i}`)
+      let cashAddress = bchjs.HDNode.toCashAddress(childNode, regtest)
+
       console.log(
-        `m/44'/145'/0'/0/${i}: ${bchjs.HDNode.toCashAddress(childNode, true)}`
+        `m/44'/145'/0'/0/${i}: ${cashAddress}`
       )
-      outStr += `m/44'/145'/0'/0/${i}: ${bchjs.HDNode.toCashAddress(
-        childNode, true
-      )}\n`
+      outStr += `m/44'/145'/0'/0/${i}: ${cashAddress}\n`
 
       // Save the first seed address for use in the .json output file.
       if (i === 0) {
-        outObj.cashAddress = bchjs.HDNode.toCashAddress(childNode, true)
+        outObj.cashAddress = cashAddress
         outObj.legacyAddress = bchjs.HDNode.toLegacyAddress(childNode, true)
+        outObj.slpAddress = bchjs.SLP.Address.toSLPAddress(outObj.cashAddress, true, true)
         outObj.WIF = bchjs.HDNode.toWIF(childNode)
       }
     }
 
     // Write the extended wallet information into a text file.
-    fs.writeFile('wallet-info-local.txt', outStr, function (err) {
+    fs.writeFile(`${WALLET_NAME}.txt`, outStr, function (err) {
       if (err) return console.error(err)
-
-      console.log('wallet-info-local.txt written successfully.')
+      console.log(`${WALLET_NAME}.txt written successfully.`)
     })
 
     // Write out the basic information into a json file for other example apps to use.
-    fs.writeFile('wallet-local.json', JSON.stringify(outObj, null, 2), function (err) {
+    fs.writeFile(`${WALLET_NAME}.json`, JSON.stringify(outObj, null, 2), function (err) {
       if (err) return console.error(err)
-      console.log('wallet-local.json written successfully.')
+      console.log(`${WALLET_NAME}.json written successfully.`)
     })
   } catch (err) {
     console.error('Error in createWallet(): ', err)
