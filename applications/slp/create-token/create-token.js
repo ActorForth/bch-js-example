@@ -52,34 +52,12 @@ try {
 
 async function createToken () {
   try {
-    // const mnemonic = walletInfo.mnemonic
-    // console.log('MNEMONIC', mnemonic)
-    //
-    // // root seed buffer
-    // const rootSeed = await bchjs.Mnemonic.toSeed(mnemonic)
-    // // master HDNode
-    // let masterHDNode
-    // if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
-    // else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'regtest') // Testnet
-    //
-    // // HDNode of BIP44 account
-    // const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/245'/0'")
-    // console.log('ACCOUNT', account)
-    //
-    // const change = bchjs.HDNode.derivePath(account, '0/0')
-    // console.log('CHANGE', change)
-    // Generate a change address from a Mnemonic of a private key.
     const change = await changeAddrFromMnemonic(walletInfo.mnemonic)
     // console.log('CHANGE', change)
 
     // get the cash address
     const cashAddress = bchjs.HDNode.toCashAddress(change, regtest)
     console.log('CASHADDRESS', cashAddress)
-
-
-
-    // const slpAddress = bchjs.SLP.Address.toSLPAddress(cashAddress)
-    // const cashAddress = 'bchreg:qz0hje9qfdwsl0uj4rca9vvw6hlpsqdd2y7r6g8ryn'
 
     // Get a UTXO to pay for the transaction.
     const data = await bchjs.Electrumx.utxo(cashAddress)
