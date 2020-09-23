@@ -3,27 +3,45 @@
   example. Also requires that wallet to have a small BCH balance.
 */
 
-// Set NETWORK to either testnet or mainnet
-const NETWORK = 'mainnet'
+// uncomment to select network
+// const NETWORK = 'mainnet'
+const NETWORK = 'regtest'
+// const NETWORK = 'regtest'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
-// const MAINNET_API_PAID = 'https://api.fullstack.cash/v3/'
-// const TESTNET_API_PAID = 'https://tapi.fullstack.cash/v3/'
+const REGTEST_API_FREE = 'http://localhost:3000/v3/'
+
+const WALLET_NAME = `wallet-info-${NETWORK}-pat`
 
 // bch-js-examples require code from the main bch-js repo
-const BCHJS = require('@chris.troutner/bch-js')
+const BCHJS = require('bch-js-reg')
 
 // Instantiate bch-js based on the network.
 let bchjs
-if (NETWORK === 'mainnet') bchjs = new BCHJS({ restURL: MAINNET_API_FREE })
-else bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
-
+let regtest
+switch (NETWORK) {
+  case 'mainnet':
+    bchjs = new BCHJS({ restURL: MAINNET_API_FREE })
+    regtest = false
+    break
+  case 'testnet':
+    bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
+    regtest = false
+    break
+  case 'regtest':
+    bchjs = new BCHJS({ restURL: REGTEST_API_FREE })
+    regtest = true
+    break
+  default:
+    bchjs = new BCHJS({ restURL: REGTEST_API_FREE })
+    regtest = true
+}
 // Open the wallet generated with create-wallet.
 let walletInfo
 try {
-  walletInfo = require('../../create-wallet/wallet.json')
+  walletInfo = require(`../../../${WALLET_NAME}.json`)
 } catch (err) {
   console.log(
     'Could not open wallet.json. Generate a wallet with create-wallet first.'
@@ -33,23 +51,8 @@ try {
 
 async function createNFT () {
   try {
-    const mnemonic = walletInfo.mnemonic
-
-    // root seed buffer
-    const rootSeed = await bchjs.Mnemonic.toSeed(mnemonic)
-    // master HDNode
-    let masterHDNode
-    if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
-    else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'testnet') // Testnet
-
-    // HDNode of BIP44 account
-    const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/245'/0'")
-
-    const change = bchjs.HDNode.derivePath(account, '0/0')
-
-    // get the cash address
-    const cashAddress = bchjs.HDNode.toCashAddress(change)
-    // const slpAddress = bchjs.SLP.Address.toSLPAddress(cashAddress)
+    const SEND_MNEMONIC = walletInfo.mnemonic
+    const cashAddress = walletInfo.cashAddress
 
     // Get a UTXO to pay for the transaction.
     const data = await bchjs.Electrumx.utxo(cashAddress)
@@ -68,7 +71,7 @@ async function createNFT () {
     let transactionBuilder
     if (NETWORK === 'mainnet') {
       transactionBuilder = new bchjs.TransactionBuilder()
-    } else transactionBuilder = new bchjs.TransactionBuilder('testnet')
+    } else transactionBuilder = new bchjs.TransactionBuilder(NETWORK)
 
     const originalAmount = utxo.value
     const vout = utxo.tx_pos
@@ -86,9 +89,9 @@ async function createNFT () {
 
     // Generate SLP config object
     const configObj = {
-      name: 'NFT Test Token',
-      ticker: 'NFTTT',
-      documentUrl: 'https://FullStack.cash',
+      name: 'ActorForth NFT Token',
+      ticker: 'A4NFT',
+      documentUrl: 'https://github.com/ActorForth/ActorForth',
       mintBatonVout: 2,
       initialQty: 1
     }
@@ -115,6 +118,7 @@ async function createNFT () {
 
     // add output to send BCH remainder of UTXO.
     transactionBuilder.addOutput(cashAddress, remainder)
+    const change = await changeAddrFromMnemonic(SEND_MNEMONIC)
 
     // Generate a keypair from the change address.
     const keyPair = bchjs.HDNode.toKeyPair(change)
@@ -163,4 +167,22 @@ function findBiggestUtxo (utxos) {
   }
 
   return utxos[largestIndex]
+}
+
+async function changeAddrFromMnemonic (mnemonic) {
+  // root seed buffer
+  const rootSeed = await bchjs.Mnemonic.toSeed(mnemonic)
+
+  // master HDNode
+  let masterHDNode
+  if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
+  else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, NETWORK)
+
+  // HDNode of BIP44 account
+  const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")
+
+  // derive the first external change address HDNode which is going to spend utxo
+  const change = bchjs.HDNode.derivePath(account, '0/0')
+
+  return change
 }
