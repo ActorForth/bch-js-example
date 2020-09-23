@@ -5,7 +5,7 @@
 // CUSTOMIZE THESE VALUES FOR YOUR USE
 const TOKENQTY = 10
 const TOKENID =
-  '61364f802ecfa57ec7a0f9fdf2f7b54562531cb372904bf44c4ccee270167e70'
+  '0384b5fbd5330eb52d21fd6cb5d4aa52f9f4c4279661047a09865b4058d1b654'
 
 // uncomment to select network
 // const NETWORK = 'mainnet'
@@ -70,20 +70,9 @@ let FROM_SLPADDR = walletInfo2.slpAddress
 
 async function sendToken () {
   try {
-    // const mnemonic = walletInfo.mnemonic
-    //
-    // // root seed buffer
-    // const rootSeed = await bchjs.Mnemonic.toSeed(mnemonic)
-    // // master HDNode
-    // let masterHDNode
-    // if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
-    // else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'regtest') // Testnet
-    //
-    // // HDNode of BIP44 account
-    // const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/245'/0'")
-    // const change = bchjs.HDNode.derivePath(account, '0/0')
+
     const change = await changeAddrFromMnemonic(WALLET_MNEMONIC)
-    console.log('CHANGE', change)
+    // console.log('CHANGE', change)
     // Generate an EC key pair for signing the transaction.
     const keyPair = bchjs.HDNode.toKeyPair(change)
 
@@ -96,21 +85,21 @@ async function sendToken () {
     // Get UTXOs held by this address.
     const data = await bchjs.Electrumx.utxo(cashAddress)
     const utxos = data.utxos
-    console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
+    // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
     if (utxos.length === 0) throw new Error('No UTXOs to spend! Exiting.')
 
     // Identify the SLP token UTXOs.
     let tokenUtxos = await bchjs.SLP.Utils.tokenUtxoDetails(utxos)
-  
-    console.log(`tokenUtxos: ${JSON.stringify(tokenUtxos, null, 2)}`)
+
+    // console.log(`tokenUtxos: ${JSON.stringify(tokenUtxos, null, 2)}`)
 
     // Filter out the non-SLP token UTXOs.
     const bchUtxos = utxos.filter((utxo, index) => {
       const tokenUtxo = tokenUtxos[index]
       if (!tokenUtxo.isValid) return true
     })
-    console.log(`bchUTXOs: ${JSON.stringify(bchUtxos, null, 2)}`)
+    // console.log(`bchUTXOs: ${JSON.stringify(bchUtxos, null, 2)}`)
 
     if (bchUtxos.length === 0) {
       throw new Error('Wallet does not have a BCH UTXO to pay miner fees.')

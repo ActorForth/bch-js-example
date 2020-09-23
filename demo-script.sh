@@ -37,13 +37,13 @@ node ./slp/create-token/create-token.js
 
 ########### check token balance #############
 
-# check balance wallet 1
+# check slp token balance wallet 1
 node ./slp/check-balance/check-balance.js
 
 ########### send token #############
 
 # check balance wallet 1
-node check-balance.js
+node ./slp/send-token/send-token.js
 
 # check balance wallet 2
-node check-balance.js
+node ./slp/check-balance/check-balance.js
