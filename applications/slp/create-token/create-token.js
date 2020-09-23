@@ -152,7 +152,7 @@ async function createToken () {
     console.log('Check the status of your transaction on this block explorer:')
     if (NETWORK === 'testnet') {
       console.log(`https://explorer.bitcoin.com/tbch/tx/${txidStr}`)
-    } else console.log(`http://localhost:12300/explorer/`)
+    } else console.log(`http://localhost:12300/explorer/${txidStr}`)
   } catch (err) {
     console.error('Error in createToken: ', err)
   }

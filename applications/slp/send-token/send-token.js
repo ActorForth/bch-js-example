@@ -6,29 +6,56 @@
 const TOKENQTY = 10
 const TOKENID =
   '61364f802ecfa57ec7a0f9fdf2f7b54562531cb372904bf44c4ccee270167e70'
-let TO_SLPADDR = 'slpreg:qrfp57r3a75h0kplzt98f66ys6u6wy9nxvkpffkxaf'
 
-// Set NETWORK to either testnet or mainnet
+// uncomment to select network
+// const NETWORK = 'mainnet'
+// const NETWORK = 'testnet'
 const NETWORK = 'regtest'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
-const TESTNET_API_FREE = 'http://localhost:3000/v3/'
-// const MAINNET_API_PAID = 'https://api.fullstack.cash/v3/'
-// const TESTNET_API_PAID = 'https://tapi.fullstack.cash/v3/'
+const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
+const REGTEST_API_FREE = 'http://localhost:3000/v3/'
+
+const WALLET_NAME = `wallet-info-${NETWORK}-slava`
+const WALLET_NAME2 = `wallet-info-${NETWORK}-pat`
 
 // bch-js-examples require code from the main bch-js repo
 const BCHJS = require('bch-js-reg')
 
 // Instantiate bch-js based on the network.
 let bchjs
-if (NETWORK === 'mainnet') bchjs = new BCHJS({ restURL: MAINNET_API_FREE })
-else bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
-
+let regtest
+switch (NETWORK) {
+  case 'mainnet':
+    bchjs = new BCHJS({ restURL: MAINNET_API_FREE })
+    regtest = false
+    break
+  case 'testnet':
+    bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
+    regtest = false
+    break
+  case 'regtest':
+    bchjs = new BCHJS({ restURL: REGTEST_API_FREE })
+    regtest = true
+    break
+  default:
+    bchjs = new BCHJS({ restURL: REGTEST_API_FREE })
+    regtest = true
+}
 // Open the wallet generated with create-wallet.
 let walletInfo
 try {
-  walletInfo = require('../create-wallet/wallet.json')
+  walletInfo = require(`../../${WALLET_NAME}.json`)
+} catch (err) {
+  console.log(
+    'Could not open wallet.json. Generate a wallet with create-wallet first.'
+  )
+  process.exit(0)
+}
+let walletInfo2
+try {
+  walletInfo2 = require(`../../${WALLET_NAME2}.json`)
 } catch (err) {
   console.log(
     'Could not open wallet.json. Generate a wallet with create-wallet first.'
@@ -36,6 +63,10 @@ try {
   process.exit(0)
 }
 // console.log(`walletInfo: ${JSON.stringify(walletInfo, null, 2)}`)
+let TO_SLPADDR = walletInfo.slpAddress
+let WALLET_MNEMONIC = walletInfo2.mnemonic
+let FROM_SLPADDR = walletInfo2.slpAddress
+
 
 async function sendToken () {
   try {
@@ -51,15 +82,15 @@ async function sendToken () {
     // // HDNode of BIP44 account
     // const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/245'/0'")
     // const change = bchjs.HDNode.derivePath(account, '0/0')
-    const change = await changeAddrFromMnemonic("duty position stumble chapter hockey calm load bomb scan shove wise game")
+    const change = await changeAddrFromMnemonic(WALLET_MNEMONIC)
     console.log('CHANGE', change)
     // Generate an EC key pair for signing the transaction.
     const keyPair = bchjs.HDNode.toKeyPair(change)
 
     // get the cash address
-    const cashAddress = bchjs.HDNode.toCashAddress(change, true)
+    const cashAddress = bchjs.HDNode.toCashAddress(change, regtest)
     console.log('CASHADDRESS', cashAddress)
-    const slpAddress = bchjs.HDNode.toSLPAddress(change, true)
+    const slpAddress = bchjs.HDNode.toSLPAddress(change, true, regtest)
     console.log('SLPADDRESS', slpAddress)
 
     // Get UTXOs held by this address.
@@ -71,6 +102,7 @@ async function sendToken () {
 
     // Identify the SLP token UTXOs.
     let tokenUtxos = await bchjs.SLP.Utils.tokenUtxoDetails(utxos)
+  
     console.log(`tokenUtxos: ${JSON.stringify(tokenUtxos, null, 2)}`)
 
     // Filter out the non-SLP token UTXOs.
@@ -116,7 +148,7 @@ async function sendToken () {
     let transactionBuilder
     if (NETWORK === 'mainnet') {
       transactionBuilder = new bchjs.TransactionBuilder()
-    } else transactionBuilder = new bchjs.TransactionBuilder('regtest')
+    } else transactionBuilder = new bchjs.TransactionBuilder(NETWORK)
 
     // Add the BCH UTXO as input to pay for the transaction.
     const originalAmount = bchUtxo.value
@@ -245,7 +277,7 @@ async function changeAddrFromMnemonic (mnemonic) {
   // master HDNode
   let masterHDNode
   if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
-  else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'regtest')
+  else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, NETWORK)
 
   // HDNode of BIP44 account
   const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")

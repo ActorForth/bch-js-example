@@ -8,8 +8,8 @@
 
 // uncomment to select network
 // const NETWORK = 'mainnet'
-// const NETWORK = 'testnet'
 const NETWORK = 'regtest'
+// const NETWORK = 'regtest'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
@@ -55,24 +55,12 @@ try {
 
 async function getBalance () {
   try {
-    const mnemonic = walletInfo.mnemonic
-
-    // root seed buffer
-    const rootSeed = await bchjs.Mnemonic.toSeed(mnemonic)
-
-    // master HDNode
-    let masterHDNode
-    if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
-    else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, NETWORK) // Testnet
-
-    // HDNode of BIP44 account
-    const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/245'/0'")
-
-    const change = bchjs.HDNode.derivePath(account, '0/0')
 
     // get the cash address
-    const cashAddress = bchjs.HDNode.toCashAddress(change, regtest)
-    const slpAddress = bchjs.SLP.Address.toSLPAddress(cashAddress, true, regtest)
+    const cashAddress = walletInfo.cashAddress
+    console.log('CASHADDRESS', cashAddress)
+    const slpAddress = bchjs.SLP.Address.toSLPAddress(walletInfo.cashAddress, true, regtest)
+    console.log('SLPADDRESS', slpAddress)
 
     // first get BCH balance
     const balance = await bchjs.Electrumx.balance(cashAddress)
