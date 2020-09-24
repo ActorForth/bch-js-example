@@ -42,7 +42,7 @@ switch (NETWORK) {
 
 // Open the wallet generated with create-wallet.
 try {
-  var walletInfo = require(`../create-wallet/${SEND_WALLET_NAME}.json`)
+  var walletInfo = require(`../../${SEND_WALLET_NAME}.json`)
 } catch (err) {
   console.log(
     'Could not open wallet.json. Generate a wallet with create-wallet first.'
@@ -52,7 +52,7 @@ try {
 
 // Open the wallet generated with create-wallet.
 try {
-  var walletInfo2 = require(`../create-wallet/${RECV_WALLET_NAME}.json`)
+  var walletInfo2 = require(`../../${RECV_WALLET_NAME}.json`)
 } catch (err) {
   console.log(
     'Could not open wallet.json. Generate a wallet with create-wallet first.'
