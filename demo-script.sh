@@ -1,11 +1,18 @@
 # stay in main directory
 cd application
+
+########### introduce our environment #############
+
+bcli getblockchaininfo
+
+bcli listaccounts
+
 ########### setup wallet #############
 # create wallet pat
 node ./slp/create-wallet/create-wallet.js
 
 # check balance wallet pat
-node ./wallet/check-balance/check-balance.js
+node ./slp/check-balance/check-balance.js
 
 # fill wallet pat
   bcli generate 1000
@@ -20,7 +27,7 @@ node ./wallet/check-balance/check-balance.js
 node ./slp/create-wallet/create-wallet.js
 
 # check balance wallet slava
-node ./wallet/check-balance/check-balance.js
+node ./slp/check-balance/check-balance.js
 
 ########### create token #############
 node ./slp/create-token/create-token.js
@@ -35,6 +42,9 @@ node ./slp/create-token/create-token.js
   }
 }
 
+# confirm tx
+bcli generate 1000
+
 ########### check token balance #############
 
 # check slp token balance wallet 1
@@ -45,11 +55,15 @@ node ./slp/check-balance/check-balance.js
 # check balance wallet 1
 node ./slp/send-token/send-token.js
 
+# confirm tx
+bcli generate 1000
+
 # check balance wallet 2
 node ./slp/check-balance/check-balance.js
 
 
 ##############################################
+bcli getblockchaininfo
 bcli generate 1000
 bcli sendtoaddress bchreg:qrj00aexnl8fephkautnph5f6huysxv4yvwus72ct5 10000
 bcli listaccounts
