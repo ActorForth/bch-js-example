@@ -47,3 +47,9 @@ node ./slp/send-token/send-token.js
 
 # check balance wallet 2
 node ./slp/check-balance/check-balance.js
+
+
+##############################################
+bcli generate 1000
+bcli sendtoaddress bchreg:qrj00aexnl8fephkautnph5f6huysxv4yvwus72ct5 10000
+bcli listaccounts
