@@ -1,0 +1,16 @@
+BIP44 $BCH Wallet
+
+128 bit english BIP32 Mnemonic:
+exotic else rally mobile arrange lens upset sail wasp wink ecology mean
+
+BIP44 Account: "m/44'/145'/0'"
+m/44'/145'/0'/0/0: bchreg:qqkxd603l8pe5v7qk7dt20tmskvfep2755xfe5ffr7
+m/44'/145'/0'/0/1: bchreg:qzwqkntjwwvkx4vqgtcfr9gy3ft2dgravva3lq6qlz
+m/44'/145'/0'/0/2: bchreg:qrgn0kecmxme30r9l7kfj205759jvmjxu5fhe3ca84
+m/44'/145'/0'/0/3: bchreg:qzxxudyzr6jtc09xzrfz4k6e5yws46y9euvc6sfz9t
+m/44'/145'/0'/0/4: bchreg:qpy3sl645rd6e2ja92erlnhrysdyq89fjq7s0yuzg7
+m/44'/145'/0'/0/5: bchreg:qr9slx2uqs3cdash0g6ukydkv4a2myqqxvnpa6walj
+m/44'/145'/0'/0/6: bchreg:qrkzkqpcqhaxrmpw7hxrua445knre0p3acm2atk7e3
+m/44'/145'/0'/0/7: bchreg:qzpaan8974mg5da2w0pfd5nupyzhejxwsq60nh4r0p
+m/44'/145'/0'/0/8: bchreg:qzzeetaghfdextjwttjqgvutard6tm29kc3netm2ut
+m/44'/145'/0'/0/9: bchreg:qpc2p6cdjk3czpaw8yjk0yehrcn4tah9ncq64uuwhy

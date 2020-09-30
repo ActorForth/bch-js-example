@@ -95,8 +95,8 @@ async function createToken () {
 
     // Generate SLP config object
     const configObj = {
-      name: 'ActorForth regtest token',
-      ticker: 'AFSLPREGTEST',
+      name: 'bchmeetup',
+      ticker: 'BCHTOKEN',
       documentUrl: 'https://github.com/ActorForth/ActorForth',
       decimals: 8,
       initialQty: 100000000000,
