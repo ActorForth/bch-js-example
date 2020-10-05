@@ -8,12 +8,12 @@
 
 // EDIT THESE VALUES FOR YOUR USE.
 const TOKENID =
-  '5f44379c7ce581d9f77ca86659e48582354100cad906cf922ea9d665f427ee09'
+  'a68fd094f740cb73a2d982e19ec451ce96275feabd748b6e00bace645f3f15ee'
 // const TO_SLPADDR = '' // The address to send the new tokens.
 
 // uncomment to select network
-// const NETWORK = 'mainnet'
-const NETWORK = 'regtest'
+const NETWORK = 'mainnet'
+// const NETWORK = 'testnet'
 // const NETWORK = 'regtest'
 
 // REST API servers.
@@ -120,12 +120,12 @@ async function createNFTChild () {
     const vout = utxo.tx_pos
     const txid = utxo.tx_hash
 
-    // add input with txid and index of vout
-    transactionBuilder.addInput(txid, vout)
-
     // add the NFT Group UTXO as an input. This NFT Group token must be burned
     // to create a Child NFT, as per the spec.
     transactionBuilder.addInput(tokenUtxos[0].tx_hash, tokenUtxos[0].tx_pos)
+
+    // add input with txid and index of vout
+    transactionBuilder.addInput(txid, vout)
 
     // Set the transaction fee. Manually set for ease of example.
     const txFee = 550
@@ -136,8 +136,8 @@ async function createNFTChild () {
 
     // Generate SLP config object
     const configObj = {
-      name: 'ActorForth NFT Child',
-      ticker: 'ActorForthNFT002',
+      name: 'regnftchild',
+      ticker: 'regnftchild',
       documentUrl: 'https://github.com/ActorForth/ActorForth'
     }
 
@@ -174,7 +174,7 @@ async function createNFTChild () {
       keyPair,
       redeemScript,
       transactionBuilder.hashTypes.SIGHASH_ALL,
-      originalAmount
+      546
     )
 
     // Sign the Token UTXO for the NFT Group token that will be burned in this
@@ -184,7 +184,7 @@ async function createNFTChild () {
       keyPair,
       redeemScript,
       transactionBuilder.hashTypes.SIGHASH_ALL,
-      546
+      originalAmount
     )
 
     // build tx
