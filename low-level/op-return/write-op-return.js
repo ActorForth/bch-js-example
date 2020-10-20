@@ -3,57 +3,98 @@
   including text data in the transaction.
 */
 
-// You can generate a WIF (private key) and public address using the
-// 'get-key' command of slp-cli-wallet.
-const WIF = 'cSABRgrvqXoesQiCNBcj17JzswcDNQKbQe8JhtiPRevW84jUaqrn'
-// const ADDR = 'bitcoincash:qr9jqgjlx2fqldyy2pj8nmxr0vuu59k0wsumalhexa'
+// uncomment to select network
+// const NETWORK = 'mainnet'
+// const NETWORK = 'testnet'
+const NETWORK = 'regtest'
 
-const NETWORK = 'testnet'
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
-// TODO test with bitcoin.com
+const REGTEST_API_FREE = 'http://localhost:3000/v3/'
+
+const WALLET_NAME = `wallet-info-${NETWORK}-pat`
+
+// bch-js-examples require code from the main bch-js repo
+const BCHJS = require('bch-js-reg')
+
+// Instantiate bch-js based on the network.
+let bchjs
+let regtest
+switch (NETWORK) {
+  case 'mainnet':
+    bchjs = new BCHJS({ restURL: MAINNET_API_FREE })
+    regtest = false
+    break
+  case 'testnet':
+    bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
+    regtest = false
+    break
+  case 'regtest':
+    bchjs = new BCHJS({ restURL: REGTEST_API_FREE })
+    regtest = true
+    break
+  default:
+    bchjs = new BCHJS({ restURL: REGTEST_API_FREE })
+    regtest = true
+}
+// Open the wallet generated with create-wallet.
+let walletInfo
+try {
+  walletInfo = require(`../../applications/${WALLET_NAME}.json`)
+} catch (err) {
+  console.log(
+    'Could not open wallet.json. Generate a wallet with create-wallet first.'
+  )
+  process.exit(0)
+}
+
+// You can generate a WIF (private key) and public address using the
+// 'get-key' command of slp-cli-wallet.
+const WIF = walletInfo.WIF
+// const ADDR = 'bitcoincash:qr9jqgjlx2fqldyy2pj8nmxr0vuu59k0wsumalhexa'
 
 // Customize the message you want to send
-const MESSAGE = 'fuck yeah'
-
-const BCHJS = require('@chris.troutner/bch-js')
-let bchjs
-if (NETWORK === 'mainnet') bchjs = new BCHJS({ restURL: MAINNET_API_FREE })
-else bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
-
+const MESSAGE = 'BURN abcdef'
 
 async function writeOpReturn (msg, wif) {
   try {
     // Create an EC Key Pair from the user-supplied WIF.
-    const ecPair = bchjs.ECPair.fromWIF(wif)
+    // const ecPair = bchjs.ECPair.fromWIF(wif)
+    const change = await changeAddrFromMnemonic(walletInfo.mnemonic)
+
+    const ecPair = bchjs.HDNode.toKeyPair(change)
+    console.log('BCHJS', bchjs)
+
+    let transactionBuilder
+    if (NETWORK === 'mainnet') {
+      transactionBuilder = new bchjs.TransactionBuilder()
+    } else transactionBuilder = new bchjs.TransactionBuilder(NETWORK)
+
+
+    console.log('ECPAIR', ecPair)
 
     // Generate the public address that corresponds to this WIF.
-    const addr = bchjs.ECPair.toCashAddress(ecPair)
+    const addr = bchjs.ECPair.toCashAddress(ecPair, regtest)
+    // const addr = walletInfo.cashAddress
     console.log(`Publishing "${msg}" to ${addr}`)
 
     // Pick a UTXO controlled by this address.
     const utxoData = await bchjs.Electrumx.utxo(addr)
     const utxos = utxoData.utxos
-    console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
+    // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
     const utxo = await findBiggestUtxo(utxos)
-    console.log('findBiggestUtxo UTXO', utxo)
+    // console.log('UTXO', utxo)
 
     // instance of transaction builder
-    const transactionBuilder = new bchjs.TransactionBuilder('testnet')
-    console.log('TRANSACTIONBUILDER', transactionBuilder)
 
     const originalAmount = utxo.value
-    console.log('ORIGINALAMOUNT', originalAmount)
     const vout = utxo.tx_pos
-    console.log('VOUT', vout)
     const txid = utxo.tx_hash
-    console.log('TXID', txid)
 
     // add input with txid and index of vout
     transactionBuilder.addInput(txid, vout)
-    console.log('TRANSACTIONBUILDER', transactionBuilder)
 
     // TODO: Compute the 1 sat/byte fee.
     const fee = 500
@@ -61,22 +102,10 @@ async function writeOpReturn (msg, wif) {
     // BEGIN - Construction of OP_RETURN transaction.
 
     // Add the OP_RETURN to the transaction.
-
-    let locktimeBip62 = 'c808f05c' //slpjs.Utils.get_BIP62_locktime_hex(locktime);
-
-let redeemScript = BITBOX.Script.encode([
-  Buffer.from(locktimeBip62, 'hex'),
-  opcodes.OP_CHECKLOCKTIMEVERIFY,
-  opcodes.OP_DROP,
-  Buffer.from(pubkey, 'hex'),
-  opcodes.OP_CHECKSIG
-])
-
     const script = [
-      Buffer.from(locktimeBip62, 'hex'),
-      bchjs.Script.opcodes.OP_CHECKLOCKTIMEVERIFY,
-      bchjs.Script.opcodes.OP_DROP, // Makes message comply with the memo.cash protocol.
-      Buffer.from(pubkey, 'hex')
+      bchjs.Script.opcodes.OP_RETURN,
+      Buffer.from('6d02', 'hex'), // Makes message comply with the memo.cash protocol.
+      Buffer.from(`${msg}`)
     ]
 
     // Compile the script array into a bitcoin-compliant hex encoded string.
@@ -85,13 +114,14 @@ let redeemScript = BITBOX.Script.encode([
 
     // Add the OP_RETURN output.
     transactionBuilder.addOutput(data, 0)
-    console.log('TRANSACTIONBUILDER 0', transactionBuilder)
+    console.log('TRANSACTIONBUILDER 1', transactionBuilder)
 
     // END - Construction of OP_RETURN transaction.
-
+    
+    // change address
     // Send the same amount - fee.
     transactionBuilder.addOutput(addr, originalAmount - fee)
-    console.log('TRANSACTIONBUILDER 1', transactionBuilder)
+    console.log('TRANSACTIONBUILDER 2', transactionBuilder)
 
     // Sign the transaction with the HD node.
     let redeemScript
@@ -105,12 +135,10 @@ let redeemScript = BITBOX.Script.encode([
 
     // build tx
     const tx = transactionBuilder.build()
-    console.log('TX', tx)
 
     // output rawhex
     const hex = tx.toHex()
-    console.log('HEX', hex)
-    // console.log(`TX hex: ${hex}`);
+    console.log(`TX hex: ${hex}`);
     // console.log(` `);
 
     // Broadcast transation to the network
@@ -148,4 +176,23 @@ async function findBiggestUtxo (utxos) {
   }
 
   return utxos[largestIndex]
+}
+
+// Generate a change address from a Mnemonic of a private key.
+async function changeAddrFromMnemonic (mnemonic) {
+  // root seed buffer
+  const rootSeed = await bchjs.Mnemonic.toSeed(mnemonic)
+
+  // master HDNode
+  let masterHDNode
+  if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
+  else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, NETWORK)
+
+  // HDNode of BIP44 account
+  const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")
+
+  // derive the first external change address HDNode which is going to spend utxo
+  const change = bchjs.HDNode.derivePath(account, '0/0')
+
+  return change
 }

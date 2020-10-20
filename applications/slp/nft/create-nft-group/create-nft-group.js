@@ -5,8 +5,8 @@
 
 // uncomment to select network
 // const NETWORK = 'mainnet'
+// const NETWORK = 'testnet'
 const NETWORK = 'regtest'
-// const NETWORK = 'regtest'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
@@ -89,8 +89,8 @@ async function createNFT () {
 
     // Generate SLP config object
     const configObj = {
-      name: 'testgenesis',
-      ticker: 'TG',
+      name: 'regtestnft3',
+      ticker: 'regtestnft3',
       documentUrl: 'https://github.com/ActorForth/ActorForth',
       mintBatonVout: 2,
       initialQty: 100
@@ -98,26 +98,47 @@ async function createNFT () {
 
     // Generate the OP_RETURN entry for an SLP GENESIS transaction.
     const script = bchjs.SLP.NFT1.newNFTGroupOpReturn(configObj)
+    // console.log('SCRIPT', script)
     // const data = bchjs.Script.encode(script)
     // const data = compile(script)
 
     // OP_RETURN needs to be the first output in the transaction.
     transactionBuilder.addOutput(script, 0)
+    // console.log('TRANSACTIONBUILDER1', transactionBuilder)
 
     // Send dust transaction representing the tokens.
     transactionBuilder.addOutput(
       bchjs.Address.toLegacyAddress(cashAddress),
       546
     )
+    // console.log('TRANSACTIONBUILDER2', transactionBuilder)
 
     // Send dust transaction representing minting baton.
     transactionBuilder.addOutput(
       bchjs.Address.toLegacyAddress(cashAddress),
       546
     )
+    // console.log('TRANSACTIONBUILDER 3', transactionBuilder)
 
     // add output to send BCH remainder of UTXO.
     transactionBuilder.addOutput(cashAddress, remainder)
+    // console.log('TRANSACTIONBUILDER 4', transactionBuilder)
+
+    const msg = "THBSLP"
+
+    const opReturnData = [
+      bchjs.Script.opcodes.OP_RETURN,
+      Buffer.from('6d02', 'hex'), // Makes message comply with the memo.cash protocol.
+      Buffer.from(`${msg}`)
+    ]
+
+    const opReturnDataEncode = bchjs.Script.encode(opReturnData)
+    console.log('OPRETURNDATAENCODE', opReturnDataEncode)
+
+    transactionBuilder.addOutput(opReturnDataEncode, 0)
+    console.log('TRANSACTIONBUILDER2', transactionBuilder)
+
+
     const change = await changeAddrFromMnemonic(SEND_MNEMONIC)
 
     // Generate a keypair from the change address.

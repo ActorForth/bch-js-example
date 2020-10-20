@@ -81,3 +81,76 @@ bcli getblockchaininfo
 bcli generate 1000
 bcli sendtoaddress bchreg:qrj00aexnl8fephkautnph5f6huysxv4yvwus72ct5 10000
 bcli listaccounts
+
+##############################################
+{
+  "v": 3,
+  "q": {
+    "find": {
+      "$query":
+      {
+        "tokenDetails.tokenIdHex": "e891f817642b84f02d9c5c349757c6632c173a4a766bad02475ffb9ed6677eda"
+      }
+    },
+    "limit": 10
+  }
+}
+
+
+
+{
+  "v": 3,
+  "q": {
+    "find": {
+      "out.s4": "\u0012䋏w��G[nO�T��^�d\u0006�.\u0012\u0012��J#d��"
+    }
+  }
+}
+
+
+
+{
+  "v": 3,
+  "q": {
+    "find": {},
+    "limit": 10
+  }
+}
+
+
+{
+  "v": 3,
+  "q": {
+    "db": ["c"],
+    "find":
+    {
+      "$query":
+      {
+        "tx.h": "da9162f12608029a8d6b015fc06d632937e7611f840c6c61416fefe97d4328de"
+      }
+    },
+    "limit": 1000
+  }
+}
+
+
+{
+  "v": 3,
+  "q": {
+    "find": {
+      "$and": [
+        {
+          "out.b5": { "op": 174 }
+        },
+        {
+          "out.b4": { "op": 83 }
+        }
+        ,
+        {
+          "out.b0": { "op": 81 }
+        }
+      ]
+    },
+    "limit": 10
+  }
+}
