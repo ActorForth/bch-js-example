@@ -5,7 +5,8 @@
 // CUSTOMIZE THESE VALUES FOR YOUR USE
 const TOKENQTY = 10
 const TOKENID =
-  '12e48b8f778ce1475b6e4ff554aaa55ee6876406eea42e1212b7f44a2364f1d0'
+  '4ffea9569545b949bd2fdd292c1f7d016d950634febdd0f1f3edbf157e71d0f8'
+  // '1c68c16433340a2d5cf98bc20494b576a6f9b82db1f3e49efac329ff1f077bd1'
 
 // uncomment to select network
 // const NETWORK = 'mainnet'
@@ -17,7 +18,7 @@ const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
 const REGTEST_API_FREE = 'http://localhost:3000/v3/'
 
-const WALLET_NAME = `wallet-info-${NETWORK}-slava`
+const WALLET_NAME = `wallet-info-${NETWORK}-pat`
 const WALLET_NAME2 = `wallet-info-${NETWORK}-pat`
 
 // bch-js-examples require code from the main bch-js repo
@@ -158,10 +159,13 @@ async function sendToken () {
     // const satoshisPerByte = 1.1
     // const txFee = Math.floor(satoshisPerByte * byteCount)
     // console.log(`txFee: ${txFee} satoshis\n`)
-    const txFee = 250
+
+    // 66: rate limited free transaction
+    const txFee = 550
 
     // amount to send back to the sending address. It's the original amount - 1 sat/byte for tx size
-    const remainder = originalAmount - txFee - 546 * 2
+    // const remainder = originalAmount - txFee - dust * numberOfTXout
+    const remainder = originalAmount - txFee - 546 * 4
     if (remainder < 1) {
       throw new Error('Selected UTXO does not have enough satoshis')
     }
@@ -191,8 +195,29 @@ async function sendToken () {
     // Last output: send the BCH change back to the wallet.
     transactionBuilder.addOutput(
       bchjs.Address.toLegacyAddress(cashAddress),
-      remainder
+      remainder - 546
     )
+
+    // const script = [
+    //   Buffer.from('msg', 'hex'),
+    //   Buffer.from('0328b6092d0bc8201b232504a67827da3694af42487fba09b2e731d863b732c3b5', 'hex'),
+    //   bchjs.Script.opcodes.OP_CHECKDATASIG
+    // ]
+    const MESSAGE = 'test2'
+
+    const script = [
+      bchjs.Script.opcodes.OP_RETURN,
+      Buffer.from('6d02', 'hex'), // Makes message comply with the memo.cash protocol.
+      Buffer.from(`${MESSAGE}`)
+    ]
+
+    // Compile the script array into a bitcoin-compliant hex encoded string.
+    const dataOutput = bchjs.Script.encode(script)
+    console.log('DATA', dataOutput)
+
+    // Add the OP_RETURN output.
+    transactionBuilder.addOutput(dataOutput, 0)
+    console.log('TRANSACTIONBUILDER 1', transactionBuilder)
 
     // Sign the transaction with the private key for the BCH UTXO paying the fees.
     let redeemScript
@@ -222,7 +247,7 @@ async function sendToken () {
 
     // output rawhex
     const hex = tx.toHex()
-    // console.log(`Transaction raw hex: `, hex)
+    console.log(`Transaction raw hex: `, hex)
 
     // END transaction construction.
 
