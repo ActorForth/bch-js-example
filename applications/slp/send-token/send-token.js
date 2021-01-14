@@ -3,9 +3,10 @@
 */
 
 // CUSTOMIZE THESE VALUES FOR YOUR USE
-const TOKENQTY = 10
+const TOKENQTY = 99
 const TOKENID =
-  '4ffea9569545b949bd2fdd292c1f7d016d950634febdd0f1f3edbf157e71d0f8'
+'73ba98d70921b47cc85e8dc4f158aaf297ad4c638497edbee5a30c842a915a5d'
+  // 'eb3870c5c298a69a089620f107d57f61999e7b3d7e16b7b1314475472eb7c5ef'
   // '1c68c16433340a2d5cf98bc20494b576a6f9b82db1f3e49efac329ff1f077bd1'
 
 // uncomment to select network
@@ -16,10 +17,15 @@ const NETWORK = 'regtest'
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
-const REGTEST_API_FREE = 'http://localhost:3000/v3/'
+const REGTEST_API_FREE = 'http://128.199.203.157:3000/v3/'
+// const REGTEST_API_FREE = 'http://localhost:3000/v3/'
 
-const WALLET_NAME = `wallet-info-${NETWORK}-pat`
-const WALLET_NAME2 = `wallet-info-${NETWORK}-pat`
+
+const WALLET_NAME = `wallet-info-${NETWORK}-pat-proposal`
+const WALLET_NAME2 = `wallet-info-${NETWORK}-pat-proposal`
+
+// const WALLET_NAME = `wallet-info-${NETWORK}-pat-proposal`
+// const WALLET_NAME2 = `wallet-info-${NETWORK}-pat-proposal`
 
 // bch-js-examples require code from the main bch-js repo
 const BCHJS = require('bch-js-reg')
@@ -65,22 +71,22 @@ try {
 }
 // console.log(`walletInfo: ${JSON.stringify(walletInfo, null, 2)}`)
 let TO_SLPADDR = walletInfo.slpAddress
-let WALLET_MNEMONIC = walletInfo2.mnemonic
-let FROM_SLPADDR = walletInfo2.slpAddress
-
+const WALLET_MNEMONIC = walletInfo2.mnemonic
+const FROM_SLPADDR = walletInfo2.slpAddress
 
 async function sendToken () {
   try {
-
     const change = await changeAddrFromMnemonic(WALLET_MNEMONIC)
     // console.log('CHANGE', change)
     // Generate an EC key pair for signing the transaction.
     const keyPair = bchjs.HDNode.toKeyPair(change)
 
     // get the cash address
-    const cashAddress = bchjs.HDNode.toCashAddress(change, regtest)
+    // const cashAddress = bchjs.HDNode.toCashAddress(change, regtest)
+    const cashAddress = 'bchreg:qrwz7r4yndrp957l9mkygl8r95et8yfexudvxkkue0'
     console.log('CASHADDRESS', cashAddress)
-    const slpAddress = bchjs.HDNode.toSLPAddress(change, true, regtest)
+    // const slpAddress = bchjs.HDNode.toSLPAddress(change, true, regtest)
+    const slpAddress = 'slpreg:qrwz7r4yndrp957l9mkygl8r95et8yfexusvu8asqx'
     console.log('SLPADDRESS', slpAddress)
 
     // Get UTXOs held by this address.
@@ -203,21 +209,29 @@ async function sendToken () {
     //   Buffer.from('0328b6092d0bc8201b232504a67827da3694af42487fba09b2e731d863b732c3b5', 'hex'),
     //   bchjs.Script.opcodes.OP_CHECKDATASIG
     // ]
-    const MESSAGE = 'test2'
 
-    const script = [
-      bchjs.Script.opcodes.OP_RETURN,
-      Buffer.from('6d02', 'hex'), // Makes message comply with the memo.cash protocol.
-      Buffer.from(`${MESSAGE}`)
-    ]
-
+    // BID1NFT_TXID
     // Compile the script array into a bitcoin-compliant hex encoded string.
-    const dataOutput = bchjs.Script.encode(script)
+    const dataOutput = opreturnOutput('a4919e3b3fc922d0d7a200034fe3d59941a22cac64892d6ee37cd5dc89bbfcb4')
     console.log('DATA', dataOutput)
-
     // Add the OP_RETURN output.
     transactionBuilder.addOutput(dataOutput, 0)
-    console.log('TRANSACTIONBUILDER 1', transactionBuilder)
+
+    // Bidder1Address [optional]
+    // Compile the script array into a bitcoin-compliant hex encoded string.
+    const dataOutput2 = opreturnOutput('slpreg:qrwz7r4yndrp957l9mkygl8r95et8yfexusvu8asqx')
+    console.log('DATA', dataOutput2)
+    transactionBuilder.addOutput(dataOutput2, 0)
+
+    // Bidder1Address_sig base64
+    const dataOutput3 = opreturnOutput('MEUCIQCjRC-q4idR3Pnmx6NtQewY83zTel_xOYDZ56s2YirbEwIgXOTI7habx_M7Ee0sGeDM2zF1crvqeOwirNvLKCcwbqE=')
+    console.log('DATA', dataOutput3)
+    transactionBuilder.addOutput(dataOutput3, 0)
+
+    // // EVT_ID (genesis group nft txid) [optional]
+    // const dataOutput4 = opreturnOutput('031aaaf07248ff195d40d00bd02a2847843d2afd6d482db3df0501243aacc25e')
+    // console.log('DATA', dataOutput4)
+    // transactionBuilder.addOutput(dataOutput4, 0)
 
     // Sign the transaction with the private key for the BCH UTXO paying the fees.
     let redeemScript
@@ -247,7 +261,7 @@ async function sendToken () {
 
     // output rawhex
     const hex = tx.toHex()
-    console.log(`Transaction raw hex: `, hex)
+    console.log('Transaction raw hex: ', hex)
 
     // END transaction construction.
 
@@ -281,6 +295,18 @@ function findBiggestUtxo (utxos) {
   }
 
   return utxos[largestIndex]
+}
+
+function opreturnOutput (message) {
+  const script = [
+    bchjs.Script.opcodes.OP_RETURN,
+    Buffer.from('6d02', 'hex'), // Makes message comply with the memo.cash protocol.
+    Buffer.from(`${message}`)
+  ]
+
+  // Compile the script array into a bitcoin-compliant hex encoded string.
+  const dataOutput = bchjs.Script.encode(script)
+  return dataOutput
 }
 
 // Generate a change address from a Mnemonic of a private key.

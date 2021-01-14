@@ -55,7 +55,7 @@ const WIF = walletInfo.WIF
 // const ADDR = 'bitcoincash:qr9jqgjlx2fqldyy2pj8nmxr0vuu59k0wsumalhexa'
 
 // Customize the message you want to send
-const MESSAGE = 'BURN abcdef'
+const MESSAGE = 'dust is not standard'
 
 async function writeOpReturn (msg, wif) {
   try {
@@ -70,7 +70,6 @@ async function writeOpReturn (msg, wif) {
     if (NETWORK === 'mainnet') {
       transactionBuilder = new bchjs.TransactionBuilder()
     } else transactionBuilder = new bchjs.TransactionBuilder(NETWORK)
-
 
     console.log('ECPAIR', ecPair)
 
@@ -117,7 +116,7 @@ async function writeOpReturn (msg, wif) {
     console.log('TRANSACTIONBUILDER 1', transactionBuilder)
 
     // END - Construction of OP_RETURN transaction.
-    
+
     // change address
     // Send the same amount - fee.
     transactionBuilder.addOutput(addr, originalAmount - fee)
@@ -138,7 +137,7 @@ async function writeOpReturn (msg, wif) {
 
     // output rawhex
     const hex = tx.toHex()
-    console.log(`TX hex: ${hex}`);
+    console.log(`TX hex: ${hex}`)
     // console.log(` `);
 
     // Broadcast transation to the network

@@ -8,20 +8,22 @@
 
 // EDIT THESE VALUES FOR YOUR USE.
 const TOKENID =
-  'a68fd094f740cb73a2d982e19ec451ce96275feabd748b6e00bace645f3f15ee'
+'e208d8d97bd9b17289854fed38cfe372d6cce2be8d5221b0aeb1bbf275bc726a'
+  // 'a4919e3b3fc922d0d7a200034fe3d59941a22cac64892d6ee37cd5dc89bbfcb4'
+  // '031aaaf07248ff195d40d00bd02a2847843d2afd6d482db3df0501243aacc25e'
 // const TO_SLPADDR = '' // The address to send the new tokens.
 
 // uncomment to select network
-const NETWORK = 'mainnet'
+// const NETWORK = 'mainnet'
 // const NETWORK = 'testnet'
-// const NETWORK = 'regtest'
+const NETWORK = 'regtest'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
-const REGTEST_API_FREE = 'http://localhost:3000/v3/'
+const REGTEST_API_FREE = 'http://128.199.203.157:3000/v3/'
 
-const WALLET_NAME = `wallet-info-${NETWORK}-pat`
+const WALLET_NAME = `wallet-info-${NETWORK}-pat-proposal`
 
 // bch-js-examples require code from the main bch-js repo
 const BCHJS = require('bch-js-reg')
@@ -65,6 +67,7 @@ async function createNFTChild () {
 
     // ge-childt the cash address
     const cashAddress = bchjs.HDNode.toCashAddress(change, regtest)
+    console.log('CASHADDRESS', cashAddress)
     // const slpAddress = bchjs.SLP.Address.toSLPAddress(cashAddress)
 
     // Get a UTXO to pay for the transaction.
@@ -100,7 +103,7 @@ async function createNFTChild () {
         utxo.utxoType === 'token' // UTXO is not a minting baton.
       ) { return true }
     })
-    // console.log(`tokenUtxos: ${JSON.stringify(tokenUtxos, null, 2)}`);
+    console.log(`tokenUtxos: ${JSON.stringify(tokenUtxos, null, 2)}`)
 
     if (tokenUtxos.length === 0) {
       throw new Error('No token UTXOs for the specified token could be found.')
@@ -136,8 +139,8 @@ async function createNFTChild () {
 
     // Generate SLP config object
     const configObj = {
-      name: 'regnftchild',
-      ticker: 'regnftchild',
+      name: 'test-mempool-slp-nft-child-1',
+      ticker: 'test-mempool-slp-nft-child-1',
       documentUrl: 'https://github.com/ActorForth/ActorForth'
     }
 
@@ -163,6 +166,7 @@ async function createNFTChild () {
 
     // add output to send BCH remainder of UTXO.
     transactionBuilder.addOutput(cashAddress, remainder)
+    console.log('TRANSACTIONBUILDER', transactionBuilder)
 
     // Generate a keypair from the change address.
     const keyPair = bchjs.HDNode.toKeyPair(change)

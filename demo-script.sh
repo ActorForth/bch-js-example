@@ -79,7 +79,7 @@ node ./slp/check-balance/check-balance.js
 
 bcli getblockchaininfo
 bcli generate 1000
-bcli sendtoaddress bchreg:qrj00aexnl8fephkautnph5f6huysxv4yvwus72ct5 10000
+bcli sendtoaddress bchreg:qrj00aexnl8fephkautnph5f6huysxv4yvwus72ct5 1000
 bcli listaccounts
 
 ##############################################
@@ -89,7 +89,7 @@ bcli listaccounts
     "find": {
       "$query":
       {
-        "tokenDetails.tokenIdHex": "e891f817642b84f02d9c5c349757c6632c173a4a766bad02475ffb9ed6677eda"
+        "tokenDetails.tokenIdHex": "1a12ae28c0d8e430491740d3305c2114a8a4e60aba892421371699ce5dc2cc7a"
       }
     },
     "limit": 10

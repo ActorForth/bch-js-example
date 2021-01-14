@@ -11,9 +11,9 @@ const NETWORK = 'regtest'
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
-const REGTEST_API_FREE = 'http://localhost:3000/v3/'
+const REGTEST_API_FREE = 'http://128.199.203.157:3000/v3/'
 
-const WALLET_NAME = `wallet-info-${NETWORK}-pat`
+const WALLET_NAME = `wallet-info-${NETWORK}-pat-proposal`
 
 // bch-js-examples require code from the main bch-js repo
 const BCHJS = require('bch-js-reg')
@@ -89,11 +89,11 @@ async function createNFT () {
 
     // Generate SLP config object
     const configObj = {
-      name: 'regtestnft3',
-      ticker: 'regtestnft3',
-      documentUrl: 'https://github.com/ActorForth/ActorForth',
+      name: 'test-Auction-1-slp-nft-1',
+      ticker: 'testAuction1SlpNft1',
+      documentUrl: 'https://github.com/ActorForth/Auction-Protocol/blob/main/proposal-spec.md',
       mintBatonVout: 2,
-      initialQty: 100
+      initialQty: 10
     }
 
     // Generate the OP_RETURN entry for an SLP GENESIS transaction.
@@ -124,7 +124,7 @@ async function createNFT () {
     transactionBuilder.addOutput(cashAddress, remainder)
     // console.log('TRANSACTIONBUILDER 4', transactionBuilder)
 
-    const msg = "THBSLP"
+    const msg = 'THBSLP'
 
     const opReturnData = [
       bchjs.Script.opcodes.OP_RETURN,
@@ -137,7 +137,6 @@ async function createNFT () {
 
     transactionBuilder.addOutput(opReturnDataEncode, 0)
     console.log('TRANSACTIONBUILDER2', transactionBuilder)
-
 
     const change = await changeAddrFromMnemonic(SEND_MNEMONIC)
 

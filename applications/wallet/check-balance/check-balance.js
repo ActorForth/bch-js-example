@@ -51,6 +51,7 @@ async function getBalance (address) {
   try {
     // first get BCH balance
     const balance = await bchjs.Electrumx.balance(address)
+    console.log('BALANCE', balance)
 
     console.log('BCH Balance information:')
     console.log(JSON.stringify(balance, null, 2))

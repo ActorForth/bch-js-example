@@ -74,7 +74,7 @@ async function createWallet () {
     // Generate the first 10 seed addresses.
     for (let i = 0; i < 10; i++) {
       const childNode = masterHDNode.derivePath(`m/44'/145'/0'/0/${i}`)
-      let cashAddress = bchjs.HDNode.toCashAddress(childNode, regtest)
+      const cashAddress = bchjs.HDNode.toCashAddress(childNode, regtest)
 
       console.log(
         `m/44'/145'/0'/0/${i}: ${cashAddress}`

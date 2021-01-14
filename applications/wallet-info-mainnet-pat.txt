@@ -1,0 +1,16 @@
+BIP44 $BCH Wallet
+
+128 bit english BIP32 Mnemonic:
+process pill target remind merry rotate bronze stereo mammal rice possible garden
+
+BIP44 Account: "m/44'/145'/0'"
+m/44'/145'/0'/0/0: bitcoincash:qqt78n2h8vreg655dvysedx0083juqgdmyt0xklmuv
+m/44'/145'/0'/0/1: bitcoincash:qrk5xtl3fcnctyvqcqne2g0umwkyf6g5gy5uwpgj97
+m/44'/145'/0'/0/2: bitcoincash:qqwpfx4qyuncr7t0ntnuc62shm77zdu4jy8l9n4nfx
+m/44'/145'/0'/0/3: bitcoincash:qreq6gjmdmdy2udwkr7dqjg7vxdkldnkm5lxd7ye0j
+m/44'/145'/0'/0/4: bitcoincash:qrqydlck8sjmme94sh543jepk8qnjkap7s88qnuyl9
+m/44'/145'/0'/0/5: bitcoincash:qpwxa9qnxs0d85ha8ezn3sc2ahe65prqjgfpaz4rds
+m/44'/145'/0'/0/6: bitcoincash:qqa935hq50d0s0r4xapl8ym8gwp0tjcdesa73lddts
+m/44'/145'/0'/0/7: bitcoincash:qqv65jjwug4h6krndu9sfadvm5kyh4q3jvq00ckm8q
+m/44'/145'/0'/0/8: bitcoincash:qzvhq96wtc6farjs2wh7usmfpwmnarec9yudyy6edp
+m/44'/145'/0'/0/9: bitcoincash:qrtwygwx2ahk8wmegux4chegftwja03zyc63yuyz7p

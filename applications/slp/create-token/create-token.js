@@ -11,7 +11,9 @@ const NETWORK = 'regtest'
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
-const REGTEST_API_FREE = 'http://localhost:3000/v3/'
+// const REGTEST_API_FREE = 'http://128.199.203.157:3000/v3/'
+const REGTEST_API_FREE = 'http://127.0.0.1:3000/v3/'
+
 
 const WALLET_NAME = `wallet-info-${NETWORK}-pat`
 
@@ -95,9 +97,9 @@ async function createToken () {
 
     // Generate SLP config object
     const configObj = {
-      name: 'bchmeetup',
-      ticker: 'BCHTOKEN',
-      documentUrl: 'https://github.com/ActorForth/ActorForth',
+      name: 'zmq-slp-1',
+      ticker: 'zmq-slp-1',
+      documentUrl: 'https://github.com/ActorForth/bitcoincash-research/blob/master/OR_RETURNs_proposal.md',
       decimals: 8,
       initialQty: 100000000000,
       documentHash: '',

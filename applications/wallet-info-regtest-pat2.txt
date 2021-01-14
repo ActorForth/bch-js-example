@@ -1,0 +1,26 @@
+BIP44 $BCH Wallet
+
+128 bit english BIP32 Mnemonic:
+boil gap jump sister soap feature bird monster cheap wide grief blouse
+
+BIP44 Account: "m/44'/145'/0'"
+n1CrPdWpk3xPoLPJayqhGrTNyGsnXXSTkC
+n2QVt5j47rUFekynN6QKmK7nqD7WGaapyW
+mfqrATmCrqVv58JMM5HvvD4VxxHaPMTj3t
+n1ev8Ez5pSa4Uoq8stgKQuQt2dK7fhWaEQ
+n4NYiH3MPi88kyAePLBXYewinhPwx29zaQ
+mwvoX5rQetmbeqp9nDtWBUcAp1UwJCiVS8
+mwFEeZST2jmnDFYMRUpwgxb9Y4LJKUKzHY
+mzWFj8cQFb5tkQuJDgwZukvEwtmwNUSedV
+miQpHviguRjM2XwAQSfrJpruoFhFGy5E55
+mvE7Lvbz7DkR38hYxZyUd4VgpV1U7BXNkt
+mvnsytrE1DN6sg3yDZnU4D5nriGmYXXEUr
+mqUdGiNeGK9hpZGCcEPFdRtiKDj2eqyTxe
+mixAFtxvvQXGeXJXmq9sQnZ9WChGQiEnMh
+mwzDk1BQDAb9jJwip7g9YuMCgWnmqTb8b1
+mgSvANEjND8GSU4XxHSoGbxSbBkGoP2ah7
+mvnuZtEzUFvwvFXf4Fi2qy42DS2SSyKUif
+n4GuArPs3QvbUrjCFzB855vQLjX11vZ5tN
+mpQUUXojb3UQQtEbb9GWZt1usvwUwhSqVd
+mtMfFF6F2rnNSqq3y7gHBeXBAm6zLhwPFM
+n3b1HRFHLfFXWFKcAFumLyFb1Qs7EpvDeL

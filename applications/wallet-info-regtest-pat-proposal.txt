@@ -1,0 +1,16 @@
+BIP44 $BCH Wallet
+
+128 bit english BIP32 Mnemonic:
+stamp aunt danger scan various move apple gadget orchard syrup knock aisle
+
+BIP44 Account: "m/44'/145'/0'"
+m/44'/145'/0'/0/0: bchreg:qrwz7r4yndrp957l9mkygl8r95et8yfexudvxkkue0
+m/44'/145'/0'/0/1: bchreg:qrz8gfduat2646ukq4zpja5nzn0r72dtguhftvxhc6
+m/44'/145'/0'/0/2: bchreg:qzt49put58aechdgt2k5jq5e4wve272le5ugnhqd0j
+m/44'/145'/0'/0/3: bchreg:qq2cw8nfl98rhjmqwdvuz0yq0wmpe0nx0g90mpgmwl
+m/44'/145'/0'/0/4: bchreg:qqcnc2jjjvhjre68k6uprxyq5npn89s68qpz2g2phc
+m/44'/145'/0'/0/5: bchreg:qz98fsqc9uw58pms0wu3de9rnldr3mgdccweyvsk2n
+m/44'/145'/0'/0/6: bchreg:qrfwpelcrxv4qkvnwqgsymv3ysaxmx6gtc9u5v2ktm
+m/44'/145'/0'/0/7: bchreg:qzq7gytpthltm09mgdzrevzh8gjdwtfdds25ukvww3
+m/44'/145'/0'/0/8: bchreg:qpn37jngdl5ujk84vc0tgpj3ad09xgvfluktfnh5kz
+m/44'/145'/0'/0/9: bchreg:qrsyaklwutapdhpvhld76274u8gvk7qljun3m25qcc

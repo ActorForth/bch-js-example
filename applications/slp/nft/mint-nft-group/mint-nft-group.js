@@ -2,19 +2,6 @@
   Mint a NFT Group tokens.
 */
 
-{
-  "v": 3,
-  "q": {
-    "find": {
-      "$query":
-      {
-        "tokenDetails.tokenIdHex": "e891f817642b84f02d9c5c349757c6632c173a4a766bad02475ffb9ed6677eda"
-      }
-    },
-    "limit": 10
-  }
-}
-
 // EDIT THESE VALUES FOR YOUR USE.
 const TOKENID =
   'e891f817642b84f02d9c5c349757c6632c173a4a766bad02475ffb9ed6677eda'

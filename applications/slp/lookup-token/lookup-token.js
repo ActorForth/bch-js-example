@@ -41,7 +41,6 @@ switch (NETWORK) {
     regtest = true
 }
 
-
 async function lookupToken () {
   try {
     const properties = await bchjs.SLP.Utils.list(TOKENID)
