@@ -16,7 +16,7 @@ const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
 const REGTEST_API_FREE = 'http://localhost:3000/v3/'
 
-const WALLET_NAME = `wallet-info-${NETWORK}-pat`
+const WALLET_NAME = `wallet-info-${NETWORK}-mywallet`
 console.log('WALLET_NAME', WALLET_NAME)
 
 // bch-js-examples require code from the main bch-js repo
