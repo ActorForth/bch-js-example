@@ -1,0 +1,16 @@
+BIP44 $BCH Wallet
+
+128 bit english BIP32 Mnemonic:
+patch million harbor lemon evolve edit fancy mass setup bright deal finish
+
+BIP44 Account: "m/44'/145'/0'"
+m/44'/145'/0'/0/0: bchreg:qqk222gjalyzd9c8jecdk9wmyzzvl25s85fmwpg8ll
+m/44'/145'/0'/0/1: bchreg:qqhkx20qun07y0a27r8ykt42xhhfh485vv6gy8qvg5
+m/44'/145'/0'/0/2: bchreg:qrn73w8q7zawz2f45cvfgd6j2hw4agtfy5as2j2scn
+m/44'/145'/0'/0/3: bchreg:qq92q6ef4ehqnyt3ylgm97xqs9e48ch8wvgksnszuc
+m/44'/145'/0'/0/4: bchreg:qzkrrr9fmwts6r93enzww6g2wle8zxrd554sqakdkf
+m/44'/145'/0'/0/5: bchreg:qzdc0jz9p9m36e5ez720q8v723qkjkzqrgucq299q8
+m/44'/145'/0'/0/6: bchreg:qr4279fgn6wd4czfug9cll0rgxcshj4wmu7af5ugwq
+m/44'/145'/0'/0/7: bchreg:qq9mrgtwgv3dl26xg3jlsl0glllyc87jwvv7kjvk6w
+m/44'/145'/0'/0/8: bchreg:qzj0xezu64w6aka28yl64uflpu6497wy7qhy4fanjn
+m/44'/145'/0'/0/9: bchreg:qpacnu8eyl023kml4sjn3cl0dy6qk4yhdscfjlstpk

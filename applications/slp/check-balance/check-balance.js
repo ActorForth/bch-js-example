@@ -14,7 +14,9 @@ const NETWORK = 'regtest'
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
-const REGTEST_API_FREE = 'http://128.199.203.157:3000/v3/'
+// const REGTEST_API_FREE = 'http://128.199.203.157:3000/v3/'
+const REGTEST_API_FREE = 'http://localhost:3000/v3/'
+
 
 const WALLET_NAME = `wallet-info-${NETWORK}-pat-proposal`
 console.log('WALLET_NAME', WALLET_NAME)
@@ -59,7 +61,7 @@ async function getBalance () {
     // get the cash address
     const cashAddress = walletInfo.cashAddress
     console.log('CASHADDRESS', cashAddress)
-    const slpAddress = bchjs.SLP.Address.toSLPAddress(walletInfo.cashAddress, true, regtest)
+    const slpAddress = walletInfo.slpAddress
     console.log('SLPADDRESS', slpAddress)
 
     // first get BCH balance

@@ -11,7 +11,9 @@ const NETWORK = 'regtest'
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
-const REGTEST_API_FREE = 'http://128.199.203.157:3000/v3/'
+// const REGTEST_API_FREE = 'http://128.199.203.157:3000/v3/'
+const REGTEST_API_FREE = 'http://localhost:3000/v3/'
+
 
 const WALLET_NAME = `wallet-info-${NETWORK}-pat-proposal`
 
@@ -55,7 +57,7 @@ async function createNFT () {
     const cashAddress = walletInfo.cashAddress
 
     // Get a UTXO to pay for the transaction.
-    const data = await bchjs.Electrumx.utxo(cashAddress)
+    const data = await bchjs.Electrumx.utxo("bchreg:qrwz7r4yndrp957l9mkygl8r95et8yfexudvxkkue0")
     const utxos = data.utxos
     // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
@@ -89,9 +91,10 @@ async function createNFT () {
 
     // Generate SLP config object
     const configObj = {
-      name: 'test-Auction-1-slp-nft-1',
-      ticker: 'testAuction1SlpNft1',
+      name: 'Evt1-nft-group',
+      ticker: 'Evt1NftGroup',
       documentUrl: 'https://github.com/ActorForth/Auction-Protocol/blob/main/proposal-spec.md',
+      documentHash: '98e2177026c972b68d13ed3e53b59d416733014f1d26a1285ab3aeeb0c153cda',
       mintBatonVout: 2,
       initialQty: 10
     }
@@ -124,18 +127,9 @@ async function createNFT () {
     transactionBuilder.addOutput(cashAddress, remainder)
     // console.log('TRANSACTIONBUILDER 4', transactionBuilder)
 
-    const msg = 'THBSLP'
 
-    const opReturnData = [
-      bchjs.Script.opcodes.OP_RETURN,
-      Buffer.from('6d02', 'hex'), // Makes message comply with the memo.cash protocol.
-      Buffer.from(`${msg}`)
-    ]
-
-    const opReturnDataEncode = bchjs.Script.encode(opReturnData)
-    console.log('OPRETURNDATAENCODE', opReturnDataEncode)
-
-    transactionBuilder.addOutput(opReturnDataEncode, 0)
+    transactionBuilder.addOutput(opreturnOutput('THBSLP'), 0)
+    transactionBuilder.addOutput(opreturnOutput('100'), 0)
     console.log('TRANSACTIONBUILDER2', transactionBuilder)
 
     const change = await changeAddrFromMnemonic(SEND_MNEMONIC)
@@ -157,11 +151,11 @@ async function createNFT () {
     const tx = transactionBuilder.build()
     // output rawhex
     const hex = tx.toHex()
-    // console.log(`TX hex: ${hex}`)
-    // console.log(` `)
+    console.log(`TX hex: ${hex}`)
+    console.log(` `)
 
     // Broadcast transation to the network
-    const txidStr = await bchjs.RawTransactions.sendRawTransaction([hex])
+    // const txidStr = await bchjs.RawTransactions.sendRawTransaction([hex])
     console.log('Check the status of your transaction on this block explorer:')
     if (NETWORK === 'testnet') {
       console.log(`https://explorer.bitcoin.com/tbch/tx/${txidStr}`)
@@ -187,6 +181,18 @@ function findBiggestUtxo (utxos) {
   }
 
   return utxos[largestIndex]
+}
+
+function opreturnOutput (message) {
+  const script = [
+    bchjs.Script.opcodes.OP_RETURN,
+    // Buffer.from('6d02', 'hex'), // Makes message comply with the memo.cash protocol.
+    Buffer.from(`${message}`)
+  ]
+
+  // Compile the script array into a bitcoin-compliant hex encoded string.
+  const dataOutput = bchjs.Script.encode(script)
+  return dataOutput
 }
 
 async function changeAddrFromMnemonic (mnemonic) {

@@ -1,0 +1,16 @@
+BIP44 $BCH Wallet
+
+128 bit english BIP32 Mnemonic:
+lift exchange sound misery knife foil fatal tail lens letter promote arch
+
+BIP44 Account: "m/44'/145'/0'"
+m/44'/145'/0'/0/0: bchreg:qrhv6f635vqp3l605n26q2qleae2ajdfag36qmmd3j
+m/44'/145'/0'/0/1: bchreg:qpzag94kjwjpqya7e3q6ttc6ydjae0dqdq87404fw9
+m/44'/145'/0'/0/2: bchreg:qpzn3m2454yev6cr2gwdqazuqxrs4avszczyv5kh7k
+m/44'/145'/0'/0/3: bchreg:qz94n9xl8halmqmq72f2pvhjxhqsw5mf052necs0ag
+m/44'/145'/0'/0/4: bchreg:qrvgutwkvdxc059vpfczmgspwkuhm464lsrzjhscvs
+m/44'/145'/0'/0/5: bchreg:qz8jemd39jk52yfkg7kw4uddky5fw74yxy072x4ca9
+m/44'/145'/0'/0/6: bchreg:qrcm2q2rdyu39qv3ecpvd9nluhw3rsa04ychtyje4k
+m/44'/145'/0'/0/7: bchreg:qqqayd9mwka20upl9j4gj8wp4jxc03x2du0usmh9l5
+m/44'/145'/0'/0/8: bchreg:qqfhsz77x7z29s23nse7yd8pqan4lzzq9v5jfvhrcc
+m/44'/145'/0'/0/9: bchreg:qzyc6wdxfhvpeg3hw9wpu68elatwf47u8ge23ggg5n

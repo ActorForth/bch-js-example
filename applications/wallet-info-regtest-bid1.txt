@@ -1,0 +1,16 @@
+BIP44 $BCH Wallet
+
+128 bit english BIP32 Mnemonic:
+canvas return present motor prosper worth disorder custom wink situate bless couple
+
+BIP44 Account: "m/44'/145'/0'"
+m/44'/145'/0'/0/0: bchreg:qpj7jxm4sv895eya7g8xr4z45a232rtvvgh55hx863
+m/44'/145'/0'/0/1: bchreg:qqaznglrw0syj9cwqyd075whnku7wnkqx5mz8cj365
+m/44'/145'/0'/0/2: bchreg:qrlawsaj8j0ac3ck9pllxy96sg70lp4vlc6a830myn
+m/44'/145'/0'/0/3: bchreg:qz9u8j9ukuy708tn6c45tscu0z3msuavfv99g6c0hv
+m/44'/145'/0'/0/4: bchreg:qqrsjfdy60k880ycjzjrm6vn4yl70z9g6ckugu586x
+m/44'/145'/0'/0/5: bchreg:qphrvqazz9efhyy2f2sw7jnjr6tsn5udp5y6a8mjfu
+m/44'/145'/0'/0/6: bchreg:qpagy9t8uhk0qvggu0sl5fnzudw6270degessjwgt6
+m/44'/145'/0'/0/7: bchreg:qp0zgypxpyuyqp88xuz4uvrcszmrk3ytuuj770anw2
+m/44'/145'/0'/0/8: bchreg:qra5wptmy6m58r5faf40n42x29n5v4v9tc3qgunl36
+m/44'/145'/0'/0/9: bchreg:qrwv5vstvqn3u5q398273aj8l0p0ahzdtc7f26zarz

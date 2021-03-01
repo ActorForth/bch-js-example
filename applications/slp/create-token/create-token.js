@@ -12,10 +12,10 @@ const NETWORK = 'regtest'
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
 // const REGTEST_API_FREE = 'http://128.199.203.157:3000/v3/'
-const REGTEST_API_FREE = 'http://127.0.0.1:3000/v3/'
+const REGTEST_API_FREE = 'http://localhost:3000/v3/'
 
 
-const WALLET_NAME = `wallet-info-${NETWORK}-pat`
+const WALLET_NAME = `wallet-info-${NETWORK}-pat-proposal`
 
 // bch-js-examples require code from the main bch-js repo
 const BCHJS = require('bch-js-reg')
@@ -97,8 +97,8 @@ async function createToken () {
 
     // Generate SLP config object
     const configObj = {
-      name: 'zmq-slp-1',
-      ticker: 'zmq-slp-1',
+      name: 'ev2-slp-2',
+      ticker: 'ev2-slp-2',
       documentUrl: 'https://github.com/ActorForth/bitcoincash-research/blob/master/OR_RETURNs_proposal.md',
       decimals: 8,
       initialQty: 100000000000,
@@ -146,7 +146,7 @@ async function createToken () {
     const tx = transactionBuilder.build()
     // output rawhex
     const hex = tx.toHex()
-    // console.log(`TX hex: ${hex}`)
+    console.log(`TX hex: ${hex}`)
     // console.log(` `)
 
     // Broadcast transation to the network

@@ -1,0 +1,16 @@
+BIP44 $BCH Wallet
+
+128 bit english BIP32 Mnemonic:
+bottom receive tool water cream barely pig weekend glow cheese gasp airport
+
+BIP44 Account: "m/44'/145'/0'"
+m/44'/145'/0'/0/0: bchreg:qzt023av97mt2t467c20024m89gvg96grvexmua6ud
+m/44'/145'/0'/0/1: bchreg:qzfgjjckw00ymqehml7lv842wr3lcywwggdnes38qh
+m/44'/145'/0'/0/2: bchreg:qpvuaek72xhwl0gh0g6x8r2gwhnd0lvvq5s2v59ru9
+m/44'/145'/0'/0/3: bchreg:qzrr5rggnfjamjjgs8nzx73gpuk7tsnz8vavsaz2xy
+m/44'/145'/0'/0/4: bchreg:qrkq6f9cw7w2fpdnualnd5mnka7y6k2h7uew66aqq9
+m/44'/145'/0'/0/5: bchreg:qz93q35tnsklfu7qvghewswycj2pjna60u8uu9m8a7
+m/44'/145'/0'/0/6: bchreg:qz00tm2v2gwr5dhpkcpyrktthwhqjha3qylvt7m0th
+m/44'/145'/0'/0/7: bchreg:qr070ddxtdaancln5f8d60826thvyrq8gcfm0zzqfp
+m/44'/145'/0'/0/8: bchreg:qz65fymyqf5wrzz8kzaq4wsm9m8wpc5qdc4p3wjwyc
+m/44'/145'/0'/0/9: bchreg:qprg73lm97ma4kwgs0jc7keae9r2yfuvpurpd67z4a

@@ -5,37 +5,57 @@
 // CUSTOMIZE THESE VALUES FOR YOUR USE
 const TOKENQTY = 1
 const TOKENID =
-  '2df556ef00cf41de47ac389bc2295a9c932b70af8f47e837480c8f89fb780853'
-let TO_SLPADDR = 'simpleledger:qphnz7yl9xasyzd0aldxq3q875shts0dmgep39tq3e'
+  '74bbcfc6b30a3e3fc26de167688b8c3edb01c3833a6aa26b2751a87d79ab06c2'
+// let TO_SLPADDR = 'slpreg:qrfe29x23qkzug5wukq66ay98c4guau02qs7pm65r7'
+let TO_SLPADDR = 'slpreg:qzt023av97mt2t467c20024m89gvg96grvyxpdkk9y'
 
 // Set NETWORK to either testnet or mainnet
-const NETWORK = 'mainnet'
+const NETWORK = 'regtest'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
+const REGTEST_API_FREE = 'http://128.199.203.157:3000/v3/'
+
+const WALLET_NAME = `wallet-info-${NETWORK}-pat-proposal`
+
 // const MAINNET_API_PAID = 'https://api.fullstack.cash/v3/'
 // const TESTNET_API_PAID = 'https://tapi.fullstack.cash/v3/'
 
 // bch-js-examples require code from the main bch-js repo
-const BCHJS = require('@chris.troutner/bch-js')
+const BCHJS = require('bch-js-reg')
 
 // Instantiate bch-js based on the network.
 let bchjs
-if (NETWORK === 'mainnet') bchjs = new BCHJS({ restURL: MAINNET_API_FREE })
-else bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
+let regtest
+switch (NETWORK) {
+  case 'mainnet':
+    bchjs = new BCHJS({ restURL: MAINNET_API_FREE })
+    regtest = false
+    break
+  case 'testnet':
+    bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
+    regtest = false
+    break
+  case 'regtest':
+    bchjs = new BCHJS({ restURL: REGTEST_API_FREE })
+    regtest = true
+    break
+  default:
+    bchjs = new BCHJS({ restURL: REGTEST_API_FREE })
+    regtest = true
+}
 
 // Open the wallet generated with create-wallet.
 let walletInfo
 try {
-  walletInfo = require('../../create-wallet/wallet.json')
+  walletInfo = require(`../../../${WALLET_NAME}.json`)
 } catch (err) {
   console.log(
     'Could not open wallet.json. Generate a wallet with create-wallet first.'
   )
   process.exit(0)
 }
-// console.log(`walletInfo: ${JSON.stringify(walletInfo, null, 2)}`)
 
 async function sendChildToken () {
   try {
@@ -47,18 +67,19 @@ async function sendChildToken () {
     // master HDNode
     let masterHDNode
     if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
-    else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'testnet') // Testnet
+    else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, NETWORK) // Testnet
 
     // HDNode of BIP44 account
-    const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/245'/0'")
+    const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")
     const change = bchjs.HDNode.derivePath(account, '0/0')
 
     // Generate an EC key pair for signing the transaction.
     const keyPair = bchjs.HDNode.toKeyPair(change)
 
     // get the cash address
-    const cashAddress = bchjs.HDNode.toCashAddress(change)
-    const slpAddress = bchjs.HDNode.toSLPAddress(change)
+    const cashAddress = bchjs.HDNode.toCashAddress(change, regtest)
+    console.log('CASHADDRESS', cashAddress)
+    const slpAddress = bchjs.HDNode.toSLPAddress(change,true, regtest)
 
     // Get UTXOs held by this address.
     const data = await bchjs.Electrumx.utxo(cashAddress)
@@ -69,7 +90,7 @@ async function sendChildToken () {
 
     // Identify the SLP token UTXOs.
     let tokenUtxos = await bchjs.SLP.Utils.tokenUtxoDetails(utxos)
-    // console.log(`tokenUtxos: ${JSON.stringify(tokenUtxos, null, 2)}`);
+    console.log(`tokenUtxos: ${JSON.stringify(tokenUtxos, null, 2)}`);
 
     // Filter out the non-SLP token UTXOs.
     const bchUtxos = utxos.filter((utxo, index) => {
@@ -114,7 +135,7 @@ async function sendChildToken () {
     let transactionBuilder
     if (NETWORK === 'mainnet') {
       transactionBuilder = new bchjs.TransactionBuilder()
-    } else transactionBuilder = new bchjs.TransactionBuilder('testnet')
+    } else transactionBuilder = new bchjs.TransactionBuilder(regtest)
 
     // Add the BCH UTXO as input to pay for the transaction.
     const originalAmount = bchUtxo.value
@@ -164,6 +185,8 @@ async function sendChildToken () {
         546
       )
     }
+
+    // transactionBuilder.addOutput(opreturnOutput('slpreg:qzt023av97mt2t467c20024m89gvg96grvyxpdkk9y'), 0)
 
     // Last output: send the BCH change back to the wallet.
     transactionBuilder.addOutput(
@@ -217,6 +240,18 @@ async function sendChildToken () {
   }
 }
 sendChildToken()
+
+function opreturnOutput (message) {
+  const script = [
+    bchjs.Script.opcodes.OP_RETURN,
+    Buffer.from('6d02', 'hex'), // Makes message comply with the memo.cash protocol.
+    Buffer.from(`${message}`)
+  ]
+
+  // Compile the script array into a bitcoin-compliant hex encoded string.
+  const dataOutput = bchjs.Script.encode(script)
+  return dataOutput
+}
 
 // Returns the utxo with the biggest balance from an array of utxos.
 function findBiggestUtxo (utxos) {

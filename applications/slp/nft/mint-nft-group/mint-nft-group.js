@@ -4,8 +4,8 @@
 
 // EDIT THESE VALUES FOR YOUR USE.
 const TOKENID =
-  'e891f817642b84f02d9c5c349757c6632c173a4a766bad02475ffb9ed6677eda'
-const TOKENQTY = 1000 // The quantity of new tokens to mint.
+  '2e8ec09c8eb99210127b7f4a66652b42f61bd4ea55620dd3de1470acc98097ac'
+const TOKENQTY = 100 // The quantity of new tokens to mint.
 // const TO_SLPADDR = '' // The address to send the new tokens.
 
 // uncomment to select network
@@ -16,9 +16,10 @@ const NETWORK = 'regtest'
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
+// const REGTEST_API_FREE = 'http://128.199.203.157:3000/v3/'
 const REGTEST_API_FREE = 'http://localhost:3000/v3/'
 
-const WALLET_NAME = `wallet-info-${NETWORK}-pat`
+const WALLET_NAME = `wallet-info-${NETWORK}-pat-proposal`
 
 // bch-js-examples require code from the main bch-js repo
 const BCHJS = require('bch-js-reg')

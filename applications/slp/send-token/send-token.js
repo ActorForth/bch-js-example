@@ -3,9 +3,9 @@
 */
 
 // CUSTOMIZE THESE VALUES FOR YOUR USE
-const TOKENQTY = 99
+const TOKENQTY = 1000
 const TOKENID =
-'73ba98d70921b47cc85e8dc4f158aaf297ad4c638497edbee5a30c842a915a5d'
+'082bc14bfcf8ae4963ade499ab13104cbf5498eca1248eb25f637d72ed9186ed'
   // 'eb3870c5c298a69a089620f107d57f61999e7b3d7e16b7b1314475472eb7c5ef'
   // '1c68c16433340a2d5cf98bc20494b576a6f9b82db1f3e49efac329ff1f077bd1'
 
@@ -20,9 +20,8 @@ const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
 const REGTEST_API_FREE = 'http://128.199.203.157:3000/v3/'
 // const REGTEST_API_FREE = 'http://localhost:3000/v3/'
 
-
-const WALLET_NAME = `wallet-info-${NETWORK}-pat-proposal`
-const WALLET_NAME2 = `wallet-info-${NETWORK}-pat-proposal`
+const FUNDING_WALLET = `wallet-info-${NETWORK}-pat-proposal`
+const SENDTO_WALLET = `wallet-info-${NETWORK}-bidder1`
 
 // const WALLET_NAME = `wallet-info-${NETWORK}-pat-proposal`
 // const WALLET_NAME2 = `wallet-info-${NETWORK}-pat-proposal`
@@ -51,18 +50,18 @@ switch (NETWORK) {
     regtest = true
 }
 // Open the wallet generated with create-wallet.
-let walletInfo
+let SENDING_WALLET_INFO
 try {
-  walletInfo = require(`../../${WALLET_NAME}.json`)
+  SENDING_WALLET_INFO = require(`../../${SENDTO_WALLET}.json`)
 } catch (err) {
   console.log(
     'Could not open wallet.json. Generate a wallet with create-wallet first.'
   )
   process.exit(0)
 }
-let walletInfo2
+let FUNDING_WALLET_INFO
 try {
-  walletInfo2 = require(`../../${WALLET_NAME2}.json`)
+  FUNDING_WALLET_INFO = require(`../../${FUNDING_WALLET}.json`)
 } catch (err) {
   console.log(
     'Could not open wallet.json. Generate a wallet with create-wallet first.'
@@ -70,27 +69,23 @@ try {
   process.exit(0)
 }
 // console.log(`walletInfo: ${JSON.stringify(walletInfo, null, 2)}`)
-let TO_SLPADDR = walletInfo.slpAddress
-const WALLET_MNEMONIC = walletInfo2.mnemonic
-const FROM_SLPADDR = walletInfo2.slpAddress
+// let TO_SLPADDR = walletInfo.slpAddress
+let TO_SLPADDR = SENDING_WALLET_INFO.slpAddress
+const FUNDING_SLPADDR = FUNDING_WALLET_INFO.slpAddress
+const FUNDING_MNEMONIC = FUNDING_WALLET_INFO.mnemonic
+const FUNDING_CASHADDRESS = FUNDING_WALLET_INFO.cashAddress
 
 async function sendToken () {
   try {
-    const change = await changeAddrFromMnemonic(WALLET_MNEMONIC)
-    // console.log('CHANGE', change)
-    // Generate an EC key pair for signing the transaction.
-    const keyPair = bchjs.HDNode.toKeyPair(change)
+    const rootSeed = await bchjs.Mnemonic.toSeed(FUNDING_MNEMONIC)
+    const masterHDNode = bchjs.HDNode.fromSeed(rootSeed, NETWORK)
+    const childNode = masterHDNode.derivePath(`m/44'/145'/0'/0/0`)
 
-    // get the cash address
-    // const cashAddress = bchjs.HDNode.toCashAddress(change, regtest)
-    const cashAddress = 'bchreg:qrwz7r4yndrp957l9mkygl8r95et8yfexudvxkkue0'
-    console.log('CASHADDRESS', cashAddress)
-    // const slpAddress = bchjs.HDNode.toSLPAddress(change, true, regtest)
-    const slpAddress = 'slpreg:qrwz7r4yndrp957l9mkygl8r95et8yfexusvu8asqx'
-    console.log('SLPADDRESS', slpAddress)
+    // Generate an EC key pair for signing the transaction.
+    const keyPair = bchjs.HDNode.toKeyPair(childNode)
 
     // Get UTXOs held by this address.
-    const data = await bchjs.Electrumx.utxo(cashAddress)
+    const data = await bchjs.Electrumx.utxo(FUNDING_CASHADDRESS)
     const utxos = data.utxos
     // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
@@ -111,7 +106,7 @@ async function sendToken () {
     if (bchUtxos.length === 0) {
       throw new Error('Wallet does not have a BCH UTXO to pay miner fees.')
     }
-    console.log('TOKENUTXOS', tokenUtxos)
+    // console.log('TOKENUTXOS', tokenUtxos)
     // Filter out the token UTXOs that match the user-provided token ID.
     tokenUtxos = tokenUtxos.filter((utxo, index) => {
       if (
@@ -130,6 +125,7 @@ async function sendToken () {
     const bchUtxo = findBiggestUtxo(bchUtxos)
     // console.log(`bchUtxo: ${JSON.stringify(bchUtxo, null, 2)}`);
 
+    console.log('TOKENUTXOS', tokenUtxos)
     // Generate the OP_RETURN code.
     const slpSendObj = bchjs.SLP.TokenType1.generateSendOpReturn(
       tokenUtxos,
@@ -171,7 +167,7 @@ async function sendToken () {
 
     // amount to send back to the sending address. It's the original amount - 1 sat/byte for tx size
     // const remainder = originalAmount - txFee - dust * numberOfTXout
-    const remainder = originalAmount - txFee - 546 * 4
+    const remainder = originalAmount - txFee - 546 * 2
     if (remainder < 1) {
       throw new Error('Selected UTXO does not have enough satoshis')
     }
@@ -182,8 +178,8 @@ async function sendToken () {
 
     // Send the token back to the same wallet if the user hasn't specified a
     // different address.
-    if (TO_SLPADDR === '') TO_SLPADDR = walletInfo.slpAddress
-
+    if (TO_SLPADDR === '') TO_SLPADDR = FUNDING_SLPADDR
+    // console.log('TO_SLPADDR', TO_SLPADDR)
     // Send dust transaction representing tokens being sent.
     transactionBuilder.addOutput(
       bchjs.SLP.Address.toLegacyAddress(TO_SLPADDR),
@@ -193,14 +189,14 @@ async function sendToken () {
     // Return any token change back to the sender.
     if (slpSendObj.outputs > 1) {
       transactionBuilder.addOutput(
-        bchjs.SLP.Address.toLegacyAddress(slpAddress),
+        bchjs.SLP.Address.toLegacyAddress(FUNDING_SLPADDR),
         546
       )
     }
 
     // Last output: send the BCH change back to the wallet.
     transactionBuilder.addOutput(
-      bchjs.Address.toLegacyAddress(cashAddress),
+      bchjs.Address.toLegacyAddress(FUNDING_CASHADDRESS),
       remainder - 546
     )
 
@@ -212,21 +208,21 @@ async function sendToken () {
 
     // BID1NFT_TXID
     // Compile the script array into a bitcoin-compliant hex encoded string.
-    const dataOutput = opreturnOutput('a4919e3b3fc922d0d7a200034fe3d59941a22cac64892d6ee37cd5dc89bbfcb4')
-    console.log('DATA', dataOutput)
-    // Add the OP_RETURN output.
-    transactionBuilder.addOutput(dataOutput, 0)
-
-    // Bidder1Address [optional]
-    // Compile the script array into a bitcoin-compliant hex encoded string.
-    const dataOutput2 = opreturnOutput('slpreg:qrwz7r4yndrp957l9mkygl8r95et8yfexusvu8asqx')
-    console.log('DATA', dataOutput2)
-    transactionBuilder.addOutput(dataOutput2, 0)
-
-    // Bidder1Address_sig base64
-    const dataOutput3 = opreturnOutput('MEUCIQCjRC-q4idR3Pnmx6NtQewY83zTel_xOYDZ56s2YirbEwIgXOTI7habx_M7Ee0sGeDM2zF1crvqeOwirNvLKCcwbqE=')
-    console.log('DATA', dataOutput3)
-    transactionBuilder.addOutput(dataOutput3, 0)
+    // const dataOutput = opreturnOutput('a4919e3b3fc922d0d7a200034fe3d59941a22cac64892d6ee37cd5dc89bbfcb4')
+    // console.log('DATA', dataOutput)
+    // // Add the OP_RETURN output.
+    // transactionBuilder.addOutput(dataOutput, 0)
+    //
+    // // Bidder1Address [optional]
+    // // Compile the script array into a bitcoin-compliant hex encoded string.
+    // const dataOutput2 = opreturnOutput('slpreg:qrwz7r4yndrp957l9mkygl8r95et8yfexusvu8asqx')
+    // console.log('DATA', dataOutput2)
+    // transactionBuilder.addOutput(dataOutput2, 0)
+    //
+    // // Bidder1Address_sig base64
+    // const dataOutput3 = opreturnOutput('MEUCIQCjRC-q4idR3Pnmx6NtQewY83zTel_xOYDZ56s2YirbEwIgXOTI7habx_M7Ee0sGeDM2zF1crvqeOwirNvLKCcwbqE=')
+    // console.log('DATA', dataOutput3)
+    // transactionBuilder.addOutput(dataOutput3, 0)
 
     // // EVT_ID (genesis group nft txid) [optional]
     // const dataOutput4 = opreturnOutput('031aaaf07248ff195d40d00bd02a2847843d2afd6d482db3df0501243aacc25e')
@@ -309,21 +305,21 @@ function opreturnOutput (message) {
   return dataOutput
 }
 
-// Generate a change address from a Mnemonic of a private key.
-async function changeAddrFromMnemonic (mnemonic) {
-  // root seed buffer
-  const rootSeed = await bchjs.Mnemonic.toSeed(mnemonic)
-
-  // master HDNode
-  let masterHDNode
-  if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
-  else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, NETWORK)
-
-  // HDNode of BIP44 account
-  const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")
-
-  // derive the first external change address HDNode which is going to spend utxo
-  const change = bchjs.HDNode.derivePath(account, '0/0')
-
-  return change
-}
+// // Generate a change address from a Mnemonic of a private key.
+// async function changeAddrFromMnemonic (mnemonic) {
+//   // root seed buffer
+//   const rootSeed = await bchjs.Mnemonic.toSeed(mnemonic)
+//
+//   // master HDNode
+//   let masterHDNode
+//   if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
+//   else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, NETWORK)
+//
+//   // HDNode of BIP44 account
+//   const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")
+//
+//   // derive the first external change address HDNode which is going to spend utxo
+//   const change = bchjs.HDNode.derivePath(account, '0/0')
+//
+//   return change
+// }

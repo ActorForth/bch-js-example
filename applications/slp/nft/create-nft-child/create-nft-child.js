@@ -8,7 +8,7 @@
 
 // EDIT THESE VALUES FOR YOUR USE.
 const TOKENID =
-'e208d8d97bd9b17289854fed38cfe372d6cce2be8d5221b0aeb1bbf275bc726a'
+'89aaa0f20050b76f256e06fe7821cd0c31c058fd9b949925e402444ee13c2be6'
   // 'a4919e3b3fc922d0d7a200034fe3d59941a22cac64892d6ee37cd5dc89bbfcb4'
   // '031aaaf07248ff195d40d00bd02a2847843d2afd6d482db3df0501243aacc25e'
 // const TO_SLPADDR = '' // The address to send the new tokens.
@@ -21,7 +21,9 @@ const NETWORK = 'regtest'
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
-const REGTEST_API_FREE = 'http://128.199.203.157:3000/v3/'
+// const REGTEST_API_FREE = 'http://128.199.203.157:3000/v3/'
+const REGTEST_API_FREE = 'http://localhost:3000/v3/'
+
 
 const WALLET_NAME = `wallet-info-${NETWORK}-pat-proposal`
 
@@ -135,13 +137,15 @@ async function createNFTChild () {
 
     // amount to send back to the sending address.
     // Subtract two dust transactions for minting baton and tokens.
-    const remainder = originalAmount - txFee
+    const remainder = originalAmount - txFee - (546 * 2)
 
     // Generate SLP config object
     const configObj = {
-      name: 'test-mempool-slp-nft-child-1',
-      ticker: 'test-mempool-slp-nft-child-1',
-      documentUrl: 'https://github.com/ActorForth/ActorForth'
+      name: 'Evt1-nft-child-3',
+      ticker: 'Evt1NftChild3',
+      documentUrl: 'https://github.com/ActorForth/Auction-Protocol/blob/main/proposal-spec.md',
+      documentHash: '98e2177026c972b68d13ed3e53b59d416733014f1d26a1285ab3aeeb0c153cda',
+      mintBatonVout: ''
     }
 
     // Generate the OP_RETURN entry for an SLP GENESIS transaction.
@@ -162,11 +166,15 @@ async function createNFTChild () {
     // transactionBuilder.addOutput(
     //   bchjs.Address.toLegacyAddress(cashAddress),
     //   546
-    // );
+    // )
 
     // add output to send BCH remainder of UTXO.
     transactionBuilder.addOutput(cashAddress, remainder)
     console.log('TRANSACTIONBUILDER', transactionBuilder)
+
+    // send back id
+    transactionBuilder.addOutput(opreturnOutput('slpreg:qrhv6f635vqp3l605n26q2qleae2ajdfagv662spgm'), 0)
+
 
     // Generate a keypair from the change address.
     const keyPair = bchjs.HDNode.toKeyPair(change)
@@ -195,7 +203,7 @@ async function createNFTChild () {
     const tx = transactionBuilder.build()
     // output rawhex
     const hex = tx.toHex()
-    // console.log(`TX hex: ${hex}`)
+    console.log(`TX hex: ${hex}`)
     // console.log(` `)
 
     // Broadcast transation to the network
@@ -225,6 +233,18 @@ function findBiggestUtxo (utxos) {
   }
 
   return utxos[largestIndex]
+}
+
+function opreturnOutput (message) {
+  const script = [
+    bchjs.Script.opcodes.OP_RETURN,
+    Buffer.from('6d02', 'hex'), // Makes message comply with the memo.cash protocol.
+    Buffer.from(`${message}`)
+  ]
+
+  // Compile the script array into a bitcoin-compliant hex encoded string.
+  const dataOutput = bchjs.Script.encode(script)
+  return dataOutput
 }
 
 async function changeAddrFromMnemonic (mnemonic) {

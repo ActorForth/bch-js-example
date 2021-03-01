@@ -1,0 +1,16 @@
+BIP44 $BCH Wallet
+
+128 bit english BIP32 Mnemonic:
+below young connect exact village north vague festival slender nest adjust dizzy
+
+BIP44 Account: "m/44'/145'/0'"
+m/44'/145'/0'/0/0: bchreg:qqqj45nlmqt3r72hm9tcxzztmyght8e8svpqth2zp7
+m/44'/145'/0'/0/1: bchreg:qq03wqlsj3vazpvzgn6qtp0w25qwssn0vg672rqe9t
+m/44'/145'/0'/0/2: bchreg:qqd449cdu72trhc2433pd4fe5veh6ncjxs04yyajp5
+m/44'/145'/0'/0/3: bchreg:qrw53unauqcrtg4v8syl8p44js3e9p70qc8745hdrx
+m/44'/145'/0'/0/4: bchreg:qzs6t3jjsrlc05n0f26rrk4q29ct52fhxgn3tzc757
+m/44'/145'/0'/0/5: bchreg:qp84280qn4fc3sq7qz2n7cn5a7wvj9n4lg47w3jk80
+m/44'/145'/0'/0/6: bchreg:qzjnk0sx5he8yfrmyapmaxe8h5whea5rs554n4dl3w
+m/44'/145'/0'/0/7: bchreg:qpyf6zvgxxxjut2akm5rv6w762jfkpldav6uadcw72
+m/44'/145'/0'/0/8: bchreg:qpgydd6k8rsq7ax4kyvz9k48tjddpyqtvun7cex8sy
+m/44'/145'/0'/0/9: bchreg:qzfmwece2lwf9ln903w27pjrexppqjw74vz9lq7k79
