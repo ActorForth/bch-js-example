@@ -89,11 +89,11 @@ async function createNFT () {
 
     // Generate SLP config object
     const configObj = {
-      name: 'ActorForth NFT Token',
-      ticker: 'A4NFT',
+      name: 'testgenesis',
+      ticker: 'TG',
       documentUrl: 'https://github.com/ActorForth/ActorForth',
       mintBatonVout: 2,
-      initialQty: 1
+      initialQty: 100
     }
 
     // Generate the OP_RETURN entry for an SLP GENESIS transaction.

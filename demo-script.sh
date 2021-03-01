@@ -29,6 +29,11 @@ node ./slp/create-wallet/create-wallet.js
 # check balance wallet slava
 node ./slp/check-balance/check-balance.js
 
+
+########### send bch #############
+
+node ./wallet/send-bch/send-bch.js
+
 ########### create token #############
 node ./slp/create-token/create-token.js
 
@@ -36,9 +41,15 @@ node ./slp/create-token/create-token.js
   "v": 3,
   "q": {
     "db": ["t"],
-    "find": {},
+    "find":
+    {
+      "$query":
+      {
+        "tokenDetails.tokenIdHex": "959a6818cba5af8aba391d3f7649f5f6a5ceb6cdcd2c2a3dcb5d2fbfc4b08e98"
+      }
+    },
     "project": {"tokenDetails": 1, "tokenStats": 1, "_id": 0 },
-    "limit": 10000
+    "limit": 1000
   }
 }
 
@@ -63,6 +74,9 @@ node ./slp/check-balance/check-balance.js
 
 
 ##############################################
+./setup js slpdb node rest
+./run server js slpdb
+
 bcli getblockchaininfo
 bcli generate 1000
 bcli sendtoaddress bchreg:qrj00aexnl8fephkautnph5f6huysxv4yvwus72ct5 10000

@@ -3,7 +3,7 @@
 */
 
 // EDIT THIS WITH THE TOKEN ID YOU WANT TO LOOK UP
-const TOKENID = '0384b5fbd5330eb52d21fd6cb5d4aa52f9f4c4279661047a09865b4058d1b654'
+const TOKENID = '12e48b8f778ce1475b6e4ff554aaa55ee6876406eea42e1212b7f44a2364f1d0'
 
 // uncomment to select network
 // const NETWORK = 'mainnet'

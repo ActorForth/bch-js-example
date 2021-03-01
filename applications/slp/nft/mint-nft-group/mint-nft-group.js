@@ -2,33 +2,64 @@
   Mint a NFT Group tokens.
 */
 
+{
+  "v": 3,
+  "q": {
+    "find": {
+      "$query":
+      {
+        "tokenDetails.tokenIdHex": "e891f817642b84f02d9c5c349757c6632c173a4a766bad02475ffb9ed6677eda"
+      }
+    },
+    "limit": 10
+  }
+}
+
 // EDIT THESE VALUES FOR YOUR USE.
 const TOKENID =
-  'ba6c400e66190baf7f101c6ea54c0ab81c7fcfa45e9a239088f2ac0a570ec0e5'
-const TOKENQTY = 10 // The quantity of new tokens to mint.
+  'e891f817642b84f02d9c5c349757c6632c173a4a766bad02475ffb9ed6677eda'
+const TOKENQTY = 1000 // The quantity of new tokens to mint.
 // const TO_SLPADDR = '' // The address to send the new tokens.
 
-// Set NETWORK to either testnet or mainnet
-const NETWORK = 'mainnet'
+// uncomment to select network
+// const NETWORK = 'mainnet'
+const NETWORK = 'regtest'
+// const NETWORK = 'regtest'
 
 // REST API servers.
 const MAINNET_API_FREE = 'https://free-main.fullstack.cash/v3/'
 const TESTNET_API_FREE = 'https://free-test.fullstack.cash/v3/'
-// const MAINNET_API_PAID = 'https://api.fullstack.cash/v3/'
-// const TESTNET_API_PAID = 'https://tapi.fullstack.cash/v3/'
+const REGTEST_API_FREE = 'http://localhost:3000/v3/'
+
+const WALLET_NAME = `wallet-info-${NETWORK}-pat`
 
 // bch-js-examples require code from the main bch-js repo
-const BCHJS = require('@chris.troutner/bch-js')
+const BCHJS = require('bch-js-reg')
 
 // Instantiate bch-js based on the network.
 let bchjs
-if (NETWORK === 'mainnet') bchjs = new BCHJS({ restURL: MAINNET_API_FREE })
-else bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
-
+let regtest
+switch (NETWORK) {
+  case 'mainnet':
+    bchjs = new BCHJS({ restURL: MAINNET_API_FREE })
+    regtest = false
+    break
+  case 'testnet':
+    bchjs = new BCHJS({ restURL: TESTNET_API_FREE })
+    regtest = false
+    break
+  case 'regtest':
+    bchjs = new BCHJS({ restURL: REGTEST_API_FREE })
+    regtest = true
+    break
+  default:
+    bchjs = new BCHJS({ restURL: REGTEST_API_FREE })
+    regtest = true
+}
 // Open the wallet generated with create-wallet.
 let walletInfo
 try {
-  walletInfo = require('../../create-wallet/wallet.json')
+  walletInfo = require(`../../../${WALLET_NAME}.json`)
 } catch (err) {
   console.log(
     'Could not open wallet.json. Generate a wallet with create-wallet first.'
@@ -45,15 +76,17 @@ async function mintNFTGroup () {
     // master HDNode
     let masterHDNode
     if (NETWORK === 'mainnet') masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
-    else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'testnet') // Testnet
+    else masterHDNode = bchjs.HDNode.fromSeed(rootSeed, 'regtest') // Testnet
 
     // HDNode of BIP44 account
-    const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/245'/0'")
+    const account = bchjs.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")
 
     const change = bchjs.HDNode.derivePath(account, '0/0')
+    // console.log('CHANGE', change)
 
     // get the cash address
-    const cashAddress = bchjs.HDNode.toCashAddress(change)
+    const cashAddress = bchjs.HDNode.toCashAddress(change, true)
+    console.log('CASHADDRESS', cashAddress)
     // const slpAddress = bchjs.SLP.Address.toSLPAddress(cashAddress)
 
     // Get a UTXO to pay for the transaction.
@@ -104,7 +137,7 @@ async function mintNFTGroup () {
     let transactionBuilder
     if (NETWORK === 'mainnet') {
       transactionBuilder = new bchjs.TransactionBuilder()
-    } else transactionBuilder = new bchjs.TransactionBuilder('testnet')
+    } else transactionBuilder = new bchjs.TransactionBuilder('regtest')
 
     const originalAmount = utxo.value
     const vout = utxo.tx_pos
